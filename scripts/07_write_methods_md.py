@@ -241,6 +241,8 @@ def main():
     rs = json.loads((ROOT / "data" / "radsat_report.json").read_text())
     osm = json.loads((ROOT / "data" / "osm_report.json").read_text())
     step3(w, fr, rs, osm)
+    ex = json.loads((ROOT / "data" / "exposure_report.json").read_text())
+    step4(w, ex)
 
     # ---- Limitations
     w("## Limitations noted\n")
@@ -269,12 +271,16 @@ def main():
       "as water by MNDWI. Such areas that are open water on 2014-09-10 count as flooded.")
     w("- OpenStreetMap polygons are current (downloaded "
       f"{osm['download_started_utc']}), not a 2014 map.")
+    w("- Building and road counts use today's OpenStreetMap, not 2014's, and OSM building "
+      "coverage in the analysis area is patchy (step 4, completeness). Building counts are "
+      "counts of mapped buildings only.")
     w(f"- Mosaic grid and clip box as in DATA.md (bbox {mosaic['bbox_wgs84']}).\n")
 
     w("## Previews (`previews/`)\n")
     for p in ("mndwi_histogram_2014-08-25.png", "mndwi_histogram_2014-09-10.png",
               "water_srinagar_side_by_side.png", "water_valley_side_by_side.png",
-              "water_sanity_sites.png", "flood_srinagar.png", "flood_valley.png"):
+              "water_sanity_sites.png", "flood_srinagar.png", "flood_valley.png",
+              "exposure_srinagar.png"):
         w(f"- `previews/{p}`")
     w("\nWater overlays: cyan = water, magenta = masked, darkened = above "
       f"{wr['valley_floor_max_m']:g} m. Flood overlays: red = flooded, blue = persistent "
@@ -438,6 +444,148 @@ def step3(w, fr, rs, osm):
       f"2014-08-25; optical MNDWI at 30 m; analysis area = valley floor <= 1,800 m "
       f"connected to Srinagar ({fr['analysis_area_km2']} km2). Area definitions of the "
       "published figures are not recorded here.\n")
+
+
+def step4(w, ex):
+    """Step 4 results, all read from data/exposure_report.json."""
+    src = ex["osm_source"]
+    e = src["extract"]
+    b, ro, ar, co = ex["buildings"], ex["roads"], ex["areas"], ex["completeness"]
+    w("## Step 4 results: buildings and roads in the flooded area\n")
+    w(f"Rules: `{ex['rules_file']}` (sha256 `{ex['rules_sha256']}`), reproduced above, "
+      "including amendment 1.\n")
+    w("**Data are today's OpenStreetMap, not 2014's. Building counts are counts of "
+      "buildings mapped in OSM; most buildings in the analysis area are not mapped "
+      "(see Completeness).**\n")
+
+    w("### Source\n")
+    w(f"- Geofabrik extract `{e['extract_id']}` ({e['extract_name']}), {e['url']}; chosen as the "
+      f"smallest of the extracts containing the whole analysis area: "
+      f"{', '.join(e['extracts_containing_area'])}. Part of the analysis area outside its "
+      f"boundary: {e['analysis_area_outside_boundary_deg2']} deg2.")
+    w(f"- File `{Path(e['file']).name}`, {e['bytes']} bytes, MD5 `{e['md5_computed']}` "
+      f"(matches Geofabrik's published `{e['md5_published']}`), sha256 `{e['sha256']}`, "
+      f"downloaded {e['downloaded_utc']}.")
+    w(f"- OpenStreetMap data timestamp in the file header: **{e['osm_timestamp_header']}** "
+      f"(replication sequence {e['osm_replication_sequence']}). Index "
+      f"{e['index_url']} fetched {e['index_fetched_utc']} (sha256 `{e['index_sha256']}`).")
+    w(f"- Elements read: {src['elements_unique']} (file `{src['elements_file']['file']}`, sha256 "
+      f"`{src['elements_file']['sha256']}`); Srinagar area elements: {src['areas_file']['elements']} "
+      f"(sha256 `{src['areas_file']['sha256']}`). Relation members not in the extract: "
+      f"{src['read_stats'].get('relation_members_missing_from_file', 0)} (none belong to a "
+      "building relation or to a Srinagar area used here; they belong to larger boundaries).")
+    w(f"- The water/wetland split uses the step 3 polygons unchanged (Overpass, OSM data as of "
+      f"{src['water_wetland_snapshot_step3']}). **The two OSM snapshots have different dates** "
+      f"({e['osm_timestamp_header']} and {src['water_wetland_snapshot_step3']}).")
+    w("- Boundary relations (type=boundary) are assembled from their outer/inner ways like "
+      "multipolygons.\n")
+
+    def brow(name, x):
+        t = x["total_in_analysis_area"]
+        return (f"| {name} | **{x['flooded']}** | {t} | {100 * x['flooded'] / t:.1f} % "
+                f"| {x['not_assessed']} | {x['dry']} |" if t else f"| {name} | 0 | 0 | - | 0 | 0 |")
+
+    w("### Buildings\n")
+    w("| Area | Flooded | Total mapped | Share | Not assessed | Not flooded |")
+    w("|---|---|---|---|---|---|")
+    c, o = b["centroid"], b["overlap"]
+    for name, x in (("Analysis area, centroid rule", c["analysis_area"]),
+                    ("Srinagar box, centroid rule", c["srinagar_box"]),
+                    ("Analysis area, any-overlap rule", o["analysis_area"]),
+                    ("Srinagar box, any-overlap rule", o["srinagar_box"]),
+                    ("Inside OSM water/wetland (centroid)", c["inside_water_wetland"]),
+                    ("Outside OSM water/wetland (centroid)", c["outside_water_wetland"]),
+                    ("Srinagar box, inside water/wetland", c["srinagar_inside_water_wetland"]),
+                    ("Srinagar box, outside water/wetland", c["srinagar_outside_water_wetland"])):
+        w(brow(name, x))
+    w(f"\nBuilding elements: {b['elements_by_type']}; not turned into geometry: "
+      f"{b['not_turned_into_geometry'] or 'none'}. Most common `building` values in the "
+      f"analysis area: " + ", ".join(f"{k} {v}" for k, v in b["building_values_top"][:10]) +
+      f". `building=no`: {b['building_no_in_area']} (counted, as the rule says any value).\n")
+
+    def rrow(name, x):
+        t = x["total_in_analysis_area"]
+        return (f"| {name} | **{x['flooded']:.1f}** | {t:.1f} | {100 * x['flooded'] / t:.1f} % "
+                f"| {x['not_assessed']:.2f} | {x['dry']:.1f} |" if t else f"| {name} | 0 | 0 | - | 0 | 0 |")
+
+    w("### Roads (km)\n")
+    w("| Roads | Flooded km | Total km | Share | Not assessed km | Not flooded km |")
+    w("|---|---|---|---|---|---|")
+    m, ot = ro["motor"], ro["other"]
+    for name, x in (("Motor roads, analysis area", m["analysis_area"]),
+                    ("Motor roads, Srinagar box", m["srinagar_box"]),
+                    ("Motor roads, inside OSM water/wetland", m["inside_water_wetland"]),
+                    ("Motor roads, outside OSM water/wetland", m["outside_water_wetland"]),
+                    ("Motor roads, Srinagar box inside water/wetland", m["srinagar_inside_water_wetland"]),
+                    ("Motor roads, Srinagar box outside water/wetland", m["srinagar_outside_water_wetland"]),
+                    ("Other highway types, analysis area", ot["analysis_area"]),
+                    ("Other highway types, Srinagar box", ot["srinagar_box"])):
+        w(rrow(name, x))
+    w("\nMotor roads by type (analysis area, km flooded / total): " + ", ".join(
+        f"{k} {v['flooded']:.1f} / {v['total_in_analysis_area']:.1f}" for k, v in ro["motor_by_value"].items()) + ".\n")
+    w("Other highway types (km flooded / total): " + ", ".join(
+        f"{k} {v['flooded']:.1f} / {v['total_in_analysis_area']:.1f}" for k, v in ro["other_by_value"].items()) + ".\n")
+    w(f"Highway ways tagged area=yes, excluded from lengths: {ro['area_yes_ways_excluded']}. "
+      f"Highway ways read: {ro['ways']}.\n")
+
+    w("### Areas within Srinagar\n")
+    w("Candidate polygon sets in the Srinagar box (rule A2):\n")
+    w("| Set | Polygons in box | Share of box buildings covered |")
+    w("|---|---|---|")
+    for k, v in ar["evaluation"].items():
+        w(f"| {k} | {v['polygons_in_box']} | {100 * v['coverage_of_box_buildings']:.1f} % |")
+    w(f"\nNo place=suburb/neighbourhood/quarter polygons exist in the box; {ar['places_with_names']} "
+      "named place points do.\n")
+    if ar["method"] == "polygons":
+        w(f"**Rule result (A3):** the only qualifying set is `{ar['chosen_set']}`, which is used. "
+          "These are district boundaries, which are not areas within the city: the Srinagar "
+          "district holds almost all flooded buildings in the box. The sub-district (tehsil) "
+          "set does not qualify because OSM's tehsil polygons cover only part of the box.\n")
+        w("| Area | Flooded buildings | Buildings | Not assessed | Flooded motor road km |")
+        w("|---|---|---|---|---|")
+        for r in ar["top10"]:
+            w(f"| {r['name']} | {r['flooded_buildings']} | {r['buildings']} "
+              f"| {r['not_assessed_buildings']} | {r['flooded_motor_road_km']:.2f} |")
+        g = ar.get("supplementary_grid")
+        if g:
+            w("\n**Supplementary (added after the rule result was seen, at the project "
+              "owner's decision; not the rule result):** the A3 fallback, 1 km UTM cells "
+              "labelled with the nearest named suburb, neighbourhood or quarter. Ten cells "
+              f"with the most flooded buildings ({g['flooded_buildings_in_top10']} flooded buildings "
+              f"in total; {g['cells_with_buildings']} cells contain mapped buildings):\n")
+            w("| Cell lower-left (UTM 43N, m) | Nearest place | Type | Distance (m) "
+              "| Flooded buildings | Buildings | Flooded motor road km |")
+            w("|---|---|---|---|---|---|---|")
+            for r in g["top10"]:
+                w(f"| {r['cell_lower_left_utm'][0]:.0f}, {r['cell_lower_left_utm'][1]:.0f} "
+                  f"| {r['nearest_place']} | {r['place_type']} | {r['distance_to_place_m']:.0f} "
+                  f"| {r['flooded_buildings']} | {r['buildings']} | {r['flooded_motor_road_km']:.2f} |")
+            w("\nA cell's label is the nearest named place to the cell centre, not a boundary.\n")
+    else:
+        w("**Rule result (A3):** no polygon set qualifies, so the 1 km grid is used.\n")
+
+    w("### Completeness warning\n")
+    w(f"On a {co['cell_m'] / 1000:g} km grid over the analysis area ({co['cells_with_analysis_area']} cells; "
+      f"{co['cells_with_ge_2km_motor_road']} with at least {co['road_min_km']:g} km of motor road):\n")
+    w(f"- **{co['c1_cells_roads_no_buildings']} of {co['cells_with_ge_2km_motor_road']} cells with "
+      f"roads have no mapped building at all** (C1). They hold {co['c1_analysis_area_km2_in_flagged']} km2 "
+      f"of the analysis area, {co['c1_motor_road_km_in_flagged']} km of motor road and "
+      f"{co['c1_flooded_km2_in_flagged']} km2 of the flooded area.")
+    p_ = co["c2_buildings_per_motor_km_p10_p25_p50_p75_p90"]
+    w(f"- Mapped buildings per km of motor road (C2), 10th/25th/50th/75th/90th percentile over "
+      f"cells: {' / '.join(str(x) for x in p_)}; Srinagar box cells: "
+      f"{' / '.join(str(x) for x in co['c2_srinagar_box_cells'])}; other cells: "
+      f"{' / '.join(str(x) for x in co['c2_rest_cells'])}. {co['c2_cells_lt_1_building_per_km']} cells "
+      "have fewer than one mapped building per km of motor road.")
+    w("- In the preview (`previews/exposure_srinagar.png`) flooded roads run through the whole "
+      "flooded city while mapped buildings form a few clusters.")
+    w("- Reading: OSM building coverage is patchy everywhere in the analysis area, including "
+      "Srinagar. The building counts are exact for buildings mapped in OSM, so they are a lower "
+      "bound on the real number and must not be read as the number of buildings flooded. Road lengths are less affected, but OSM road "
+      "completeness is not tested here. Nothing was corrected (rule C3).\n")
+    w("Files (not committed): `data/exposure/buildings.csv` (one row per building with its "
+      "centroid and state under both rules), `data/exposure/roads.csv` (metres dry / flooded / "
+      "not assessed per way).\n")
 
 
 if __name__ == "__main__":

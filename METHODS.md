@@ -463,6 +463,105 @@ As provided by the project owner; not independently verified here.
 
 This measurement: one Landsat 8 OLI image, 2014-09-10 about 05:36 UTC, against 2014-08-25; optical MNDWI at 30 m; analysis area = valley floor <= 1,800 m connected to Srinagar (3696.7941 km2). Area definitions of the published figures are not recorded here.
 
+## Step 4 results: buildings and roads in the flooded area
+
+Rules: `scripts/step4_rules.md` (sha256 `c3ab4df2bef436b72b74a69713865d1e4561bf4fd172abda9d4958bb44f60a01`), reproduced above, including amendment 1.
+
+**Data are today's OpenStreetMap, not 2014's. Building counts are counts of buildings mapped in OSM; most buildings in the analysis area are not mapped (see Completeness).**
+
+### Source
+
+- Geofabrik extract `northern-zone` (Northern Zone), https://download.geofabrik.de/asia/india/northern-zone-latest.osm.pbf; chosen as the smallest of the extracts containing the whole analysis area: northern-zone, india, asia. Part of the analysis area outside its boundary: 0.0 deg2.
+- File `northern-zone-latest.osm.pbf`, 223486998 bytes, MD5 `205154f24cf13d99e0c19948d2791461` (matches Geofabrik's published `205154f24cf13d99e0c19948d2791461`), sha256 `2042983c1ca244f15bca0d20effadd0566c939678e69949d150932f618188cbd`, downloaded 2026-10-02T16:58:04+00:00.
+- OpenStreetMap data timestamp in the file header: **2026-10-01T20:22:06Z** (replication sequence 1815). Index https://download.geofabrik.de/index-v1.json fetched 2026-10-02T16:56:11+00:00 (sha256 `9b1d170b09eee255c0e56925788eb367646397c1ba1882f36b4c5c79133691fc`).
+- Elements read: 53810 (file `data/osm/exposure/extract_elements.json`, sha256 `6632be69d2f9e93c9e2845de68bf8f80bcb18d5e391ca9c5fd81550eef80b07c`); Srinagar area elements: 106 (sha256 `4926cd47d98633938ce3df4ff2358ea2fa4b8977cb057bcf0060e15455335f25`). Relation members not in the extract: 16854 (none belong to a building relation or to a Srinagar area used here; they belong to larger boundaries).
+- The water/wetland split uses the step 3 polygons unchanged (Overpass, OSM data as of 2026-10-02T16:20:02Z). **The two OSM snapshots have different dates** (2026-10-01T20:22:06Z and 2026-10-02T16:20:02Z).
+- Boundary relations (type=boundary) are assembled from their outer/inner ways like multipolygons.
+
+### Buildings
+
+| Area | Flooded | Total mapped | Share | Not assessed | Not flooded |
+|---|---|---|---|---|---|
+| Analysis area, centroid rule | **429** | 7024 | 6.1 % | 0 | 6595 |
+| Srinagar box, centroid rule | **422** | 3094 | 13.6 % | 0 | 2672 |
+| Analysis area, any-overlap rule | **791** | 7032 | 11.2 % | 0 | 6241 |
+| Srinagar box, any-overlap rule | **769** | 3094 | 24.9 % | 0 | 2325 |
+| Inside OSM water/wetland (centroid) | **9** | 15 | 60.0 % | 0 | 6 |
+| Outside OSM water/wetland (centroid) | **420** | 7009 | 6.0 % | 0 | 6589 |
+| Srinagar box, inside water/wetland | **8** | 11 | 72.7 % | 0 | 3 |
+| Srinagar box, outside water/wetland | **414** | 3083 | 13.4 % | 0 | 2669 |
+
+Building elements: {'node': 71, 'way': 10396, 'relation': 51}; not turned into geometry: none. Most common `building` values in the analysis area: yes 5494, house 526, commercial 294, hospital 153, school 149, college 81, university 70, retail 62, hangar 36, mosque 27. `building=no`: 16 (counted, as the rule says any value).
+
+### Roads (km)
+
+| Roads | Flooded km | Total km | Share | Not assessed km | Not flooded km |
+|---|---|---|---|---|---|
+| Motor roads, analysis area | **892.9** | 10712.8 | 8.3 % | 0.34 | 9819.5 |
+| Motor roads, Srinagar box | **783.8** | 4009.7 | 19.5 % | 0.05 | 3225.8 |
+| Motor roads, inside OSM water/wetland | **22.3** | 65.1 | 34.2 % | 0.00 | 42.9 |
+| Motor roads, outside OSM water/wetland | **870.7** | 10647.7 | 8.2 % | 0.34 | 9776.6 |
+| Motor roads, Srinagar box inside water/wetland | **15.7** | 46.4 | 33.8 % | 0.00 | 30.7 |
+| Motor roads, Srinagar box outside water/wetland | **768.1** | 3963.3 | 19.4 % | 0.05 | 3195.1 |
+| Other highway types, analysis area | **103.7** | 1314.4 | 7.9 % | 0.04 | 1210.7 |
+| Other highway types, Srinagar box | **44.0** | 292.5 | 15.0 % | 0.00 | 248.5 |
+
+Motor roads by type (analysis area, km flooded / total): living_street 1.1 / 20.9, motorway 36.9 / 204.3, motorway_link 1.2 / 3.9, primary 38.9 / 338.3, primary_link 0.7 / 2.5, residential 408.5 / 2812.8, secondary 55.1 / 589.7, secondary_link 0.1 / 0.7, service 128.9 / 2219.5, tertiary 51.6 / 1533.6, tertiary_link 0.4 / 5.5, trunk 49.8 / 413.8, trunk_link 3.1 / 9.8, unclassified 116.6 / 2557.5.
+
+Other highway types (km flooded / total): construction 4.3 / 10.6, cycleway 0.1 / 6.4, escape 0.0 / 2.8, footway 9.8 / 68.5, path 14.3 / 101.7, pedestrian 1.3 / 5.2, road 0.0 / 0.0, steps 0.0 / 1.2, track 73.9 / 1117.9.
+
+Highway ways tagged area=yes, excluded from lengths: {'service': 14, 'pedestrian': 1}. Highway ways read: 43277.
+
+### Areas within Srinagar
+
+Candidate polygon sets in the Srinagar box (rule A2):
+
+| Set | Polygons in box | Share of box buildings covered |
+|---|---|---|
+| admin_level_6 | 14 | 26.3 % |
+| admin_level_5 | 6 | 100.0 % |
+
+No place=suburb/neighbourhood/quarter polygons exist in the box; 83 named place points do.
+
+**Rule result (A3):** the only qualifying set is `admin_level_5`, which is used. These are district boundaries, which are not areas within the city: the Srinagar district holds almost all flooded buildings in the box. The sub-district (tehsil) set does not qualify because OSM's tehsil polygons cover only part of the box.
+
+| Area | Flooded buildings | Buildings | Not assessed | Flooded motor road km |
+|---|---|---|---|---|
+| Srinagar | 420 | 2833 | 0 | 643.95 |
+| Pulwama | 2 | 13 | 0 | 65.65 |
+| Budgam | 0 | 231 | 0 | 86.32 |
+| Bandipore | 0 | 7 | 0 | 13.37 |
+| Baramulla | 0 | 5 | 0 | 61.84 |
+| Ganderbal | 0 | 5 | 0 | 1.90 |
+
+**Supplementary (added after the rule result was seen, at the project owner's decision; not the rule result):** the A3 fallback, 1 km UTM cells labelled with the nearest named suburb, neighbourhood or quarter. Ten cells with the most flooded buildings (285 flooded buildings in total; 193 cells contain mapped buildings):
+
+| Cell lower-left (UTM 43N, m) | Nearest place | Type | Distance (m) | Flooded buildings | Buildings | Flooded motor road km |
+|---|---|---|---|---|---|---|
+| 481000, 3771000 | Karan Nagar | suburb | 248 | 71 | 228 | 10.03 |
+| 482000, 3770000 | Gawkadal | suburb | 108 | 30 | 92 | 5.93 |
+| 483000, 3770000 | Kothi Bagh | neighbourhood | 709 | 28 | 103 | 5.50 |
+| 487000, 3767000 | Lasjan | suburb | 1022 | 28 | 45 | 6.25 |
+| 481000, 3770000 | Guru Bazar | suburb | 536 | 26 | 73 | 11.88 |
+| 482000, 3769000 | Lal Mandi | suburb | 180 | 25 | 94 | 10.14 |
+| 484000, 3770000 | Dal Gate | neighbourhood | 620 | 21 | 60 | 3.92 |
+| 478000, 3770000 | Bemina | suburb | 182 | 21 | 35 | 15.28 |
+| 483000, 3769000 | Rajbagh | suburb | 620 | 18 | 28 | 12.96 |
+| 478000, 3771000 | Bemina | suburb | 861 | 17 | 27 | 19.12 |
+
+A cell's label is the nearest named place to the cell centre, not a boundary.
+
+### Completeness warning
+
+On a 2 km grid over the analysis area (1161 cells; 1048 with at least 2 km of motor road):
+
+- **701 of 1048 cells with roads have no mapped building at all** (C1). They hold 2177.6823 km2 of the analysis area, 5604.207 km of motor road and 166.3695 km2 of the flooded area.
+- Mapped buildings per km of motor road (C2), 10th/25th/50th/75th/90th percentile over cells: 0.0 / 0.0 / 0.0 / 0.1 / 0.38; Srinagar box cells: 0.0 / 0.0 / 0.04 / 0.21 / 1.34; other cells: 0.0 / 0.0 / 0.0 / 0.09 / 0.29. 992 cells have fewer than one mapped building per km of motor road.
+- In the preview (`previews/exposure_srinagar.png`) flooded roads run through the whole flooded city while mapped buildings form a few clusters.
+- Reading: OSM building coverage is patchy everywhere in the analysis area, including Srinagar. The building counts are exact for buildings mapped in OSM, so they are a lower bound on the real number and must not be read as the number of buildings flooded. Road lengths are less affected, but OSM road completeness is not tested here. Nothing was corrected (rule C3).
+
+Files (not committed): `data/exposure/buildings.csv` (one row per building with its centroid and state under both rules), `data/exposure/roads.csv` (metres dry / flooded / not assessed per way).
+
 ## Limitations noted
 
 - Saturation: the MTL files report saturation present (Y/N) in green (band 3) / SWIR1 (band 6) as: `LC08_L2SP_149036_20140825_02_T1` Y/N; `LC08_L2SP_149037_20140825_02_T1` N/Y; `LC08_L2SP_149036_20140910_02_T1` Y/N; `LC08_L2SP_149037_20140910_02_T1` Y/N. QA_RADSAT was downloaded in step 3; it marks no green or SWIR1 saturation inside the clip box on either date (2014-08-25: 0 green / 0 SWIR1 pixels, 2014-09-10: 0 green / 0 SWIR1 pixels). The step 2 water masks were made before QA_RADSAT was available; with no saturated pixels in the clip box they are unaffected.
@@ -472,6 +571,7 @@ This measurement: one Landsat 8 OLI image, 2014-09-10 about 05:36 UTC, against 2
 - Row 036 / 037 reflectance offsets (DATA.md) remain in the mosaic; their effect on the water class is in section 8.
 - Water covered by vegetation (e.g. the Wular box on 2014-08-25) is not detected as water by MNDWI. Such areas that are open water on 2014-09-10 count as flooded.
 - OpenStreetMap polygons are current (downloaded 2026-10-02T16:19:34+00:00), not a 2014 map.
+- Building and road counts use today's OpenStreetMap, not 2014's, and OSM building coverage in the analysis area is patchy (step 4, completeness). Building counts are counts of mapped buildings only.
 - Mosaic grid and clip box as in DATA.md (bbox [74.2, 33.5, 75.4, 34.6]).
 
 ## Previews (`previews/`)
@@ -483,5 +583,6 @@ This measurement: one Landsat 8 OLI image, 2014-09-10 about 05:36 UTC, against 2
 - `previews/water_sanity_sites.png`
 - `previews/flood_srinagar.png`
 - `previews/flood_valley.png`
+- `previews/exposure_srinagar.png`
 
 Water overlays: cyan = water, magenta = masked, darkened = above 1800 m. Flood overlays: red = flooded, blue = persistent water, yellow = water lost, magenta = not assessed, darkened = outside the analysis area. Base image and stretch as in DATA.md.

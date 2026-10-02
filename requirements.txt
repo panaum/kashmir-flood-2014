@@ -6,3 +6,4 @@ matplotlib
 requests
 scipy
 shapely
+osmium
