@@ -1,0 +1,144 @@
+{
+ "generated_by": "scripts/18_site_data.py",
+ "sources": {
+  "data/metadata.json": "3fb8dd1d5695843dfce9011e8071cd0f6f204845df6b18c867355ff28356daff",
+  "data/water_report.json": "bfa066bf4bcecf960c8bb7cdf8d5bb113bb8955f1dded814060c0a1ed4b2af8d",
+  "data/flood_report.json": "136d57a06d91c7fb0806c0af4e9eb8635488e989f9e61364d646d46bf9afb4e6",
+  "data/osm_report.json": "cebcfb6c03d83c3a42d8ab848a2ef27dddd17cf9a3b2a0ee48ba886929cc9af2",
+  "data/exposure_report.json": "9013bd377670d87092288a595842e968903e0cb384f0797997729f3c5c287d10",
+  "data/msbuildings_report.json": "83642f3859d37a1406cb2825abd6040616ca221c4cb20b2b93ea8309f6ac1c2a",
+  "data/dem_report.json": "003897f574694488bd80181d288f7f3f57b4bf4ef292e3c657c8e62279ae79fb"
+ },
+ "dates": {
+  "before": "2014-08-25",
+  "flood": "2014-09-10",
+  "flood_time_utc": "05:36",
+  "before_time_utc": "05:36"
+ },
+ "scenes": [
+  "LC08_L2SP_149036_20140825_02_T1",
+  "LC08_L2SP_149037_20140825_02_T1",
+  "LC08_L2SP_149036_20140910_02_T1",
+  "LC08_L2SP_149037_20140910_02_T1"
+ ],
+ "method": {
+  "pixel_m": 30,
+  "valley_floor_max_m": 1800.0,
+  "threshold": 0.127,
+  "analysis_area_km2": 3696.7941
+ },
+ "flood": {
+  "flooded_km2": 376.6077,
+  "range_km2": [
+   361.5021,
+   423.1881
+  ],
+  "range_thresholds": [
+   [
+    0.177,
+    0.177
+   ],
+   [
+    0.0,
+    0.0
+   ]
+  ],
+  "variants": {
+   "primary": {
+    "t_pre": 0.127,
+    "t_post": 0.127,
+    "flooded_km2": 376.6077
+   },
+   "a_own_otsu": {
+    "t_pre": -0.058,
+    "t_post": 0.127,
+    "flooded_km2": 363.9924
+   },
+   "b_zero": {
+    "t_pre": 0.0,
+    "t_post": 0.0,
+    "flooded_km2": 423.1881
+   },
+   "c_minus_0.05": {
+    "t_pre": 0.077,
+    "t_post": 0.077,
+    "flooded_km2": 393.6456
+   },
+   "c_plus_0.05": {
+    "t_pre": 0.177,
+    "t_post": 0.177,
+    "flooded_km2": 361.5021
+   }
+  },
+  "persistent_km2": 36.855,
+  "lost_km2": 0.2358,
+  "not_assessed_km2": 0.5526,
+  "not_assessed_pct": 0.015,
+  "inside_lakes_wetlands_km2": 119.1465,
+  "outside_lakes_wetlands_km2": 257.4612,
+  "srinagar_box_km2": 161.3457,
+  "unflagged_cloud_u2_km2": 1.3689,
+  "usgs_water_bit_kappa_flood_date": 0.5216
+ },
+ "roads": {
+  "motor_flooded_km": 892.9423,
+  "motor_total_km": 10712.7994,
+  "motor_srinagar_flooded_km": 783.8025,
+  "motor_srinagar_total_km": 4009.6667,
+  "osm_timestamp": "2026-10-01T20:22:06Z"
+ },
+ "buildings": {
+  "footprints_flooded": 42016,
+  "footprints_flooded_overlap": 55950,
+  "footprints_total": 1185245,
+  "footprints_srinagar_flooded": 37611,
+  "footprints_srinagar_total": 337257,
+  "about": 40000,
+  "about_words": "forty thousand",
+  "imagery_start": "2017",
+  "imagery_end": "2021",
+  "ms_version": "2023-04-25",
+  "osm_mapped_flooded": 429,
+  "osm_cells_roads_no_buildings": 701,
+  "ms_cells_roads_no_buildings": 23,
+  "cells_with_roads": 1048
+ },
+ "published": {
+  "note": "Published figures provided by the project owner as context only; not independently verified. The analysis was not adjusted toward them.",
+  "figures": [
+   {
+    "source": "J&K Department of Environment and Remote Sensing with ISRO, as reported by Kashmir Life",
+    "figure": "358.6 km2",
+    "figure_km2": 358.6,
+    "approx": false,
+    "date_range": "2014-09-10",
+    "sensor": "not stated in the information recorded here",
+    "difference": "Same date. Sensor, method and area definition not recorded here, so the difference cannot be attributed."
+   },
+   {
+    "source": "Kumar and Acharya, Natural Hazards, 2016",
+    "figure": "about 488 km2",
+    "figure_km2": 488,
+    "approx": true,
+    "date_range": "2014-09-10 to 2014-10-12",
+    "sensor": "Landsat",
+    "difference": "Covers a month of images rather than one date; same sensor family."
+   },
+   {
+    "source": "Bhatt et al., Geomatics, Natural Hazards and Risk, 2017",
+    "figure": "about 557 km2",
+    "figure_km2": 557,
+    "approx": true,
+    "date_range": "2014-09-08 to 2014-09-23",
+    "sensor": "radar",
+    "difference": "Covers two weeks rather than one date, and radar sees through cloud and records water differently from an optical index."
+   }
+  ]
+ },
+ "links": {
+  "repository": "https://github.com/panaum/kashmir-flood-2014",
+  "methods": "https://github.com/panaum/kashmir-flood-2014/blob/main/METHODS.md",
+  "data": "https://github.com/panaum/kashmir-flood-2014/blob/main/DATA.md",
+  "readme": "https://github.com/panaum/kashmir-flood-2014#readme"
+ }
+}

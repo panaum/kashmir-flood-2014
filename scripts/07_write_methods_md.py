@@ -437,16 +437,9 @@ def step3(w, fr, rs, osm):
     w("As provided by the project owner; not independently verified here.\n")
     w("| Source | Figure | Date range | Sensor / method | Difference from this measurement |")
     w("|---|---|---|---|---|")
-    w("| J&K Department of Environment and Remote Sensing with ISRO, as reported by "
-      "Kashmir Life | 358.6 km2 | 2014-09-10 | not stated in the information recorded "
-      "here | Same date. Sensor, method and area definition not recorded here, so the "
-      "difference cannot be attributed. |")
-    w("| Kumar and Acharya, Natural Hazards, 2016 | about 488 km2 | 2014-09-10 to "
-      "2014-10-12 | Landsat | Covers a month of images rather than one date; same "
-      "sensor family. |")
-    w("| Bhatt et al., Geomatics, Natural Hazards and Risk, 2017 | about 557 km2 | "
-      "2014-09-08 to 2014-09-23 | radar | Covers two weeks rather than one date, and "
-      "radar sees through cloud and records water differently from an optical index. |")
+    pub = json.loads((Path(__file__).parent / "published_figures.json").read_text())
+    for f in pub["figures"]:
+        w(f"| {f['source']} | {f['figure']} | {f['date_range']} | {f['sensor']} | {f['difference']} |")
     w(f"\nThis measurement: one Landsat 8 OLI image, 2014-09-10 about 05:36 UTC, against "
       f"2014-08-25; optical MNDWI at 30 m; analysis area = valley floor <= 1,800 m "
       f"connected to Srinagar ({fr['analysis_area_km2']} km2). Area definitions of the "

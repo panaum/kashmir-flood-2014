@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "The Kashmir flood, September 2014: a reproducible Landsat 8 measurement"
+type: software
+authors:
+  - family-names: Pandit
+    given-names: Anaum
+date-released: 2026-10-02
+repository-code: "https://github.com/panaum/kashmir-flood-2014"
+url: "https://panaum.github.io/kashmir-flood-2014/"
+license: MIT
+keywords:
+  - flood mapping
+  - Landsat 8
+  - MNDWI
+  - Kashmir
+  - Srinagar

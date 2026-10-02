@@ -1,0 +1,198 @@
+/* The Kashmir Flood, September 2014 — exhibit-style page.
+   Colour: chinar rust, saffron, walnut, Dal blue-green on off-white.
+   Structure: Bodoni-style headings, 12-column grid, generous space.
+   Map colours are set from data/layers.json (Okabe-Ito, colour-blind safe). */
+
+@font-face {
+  font-family: "Bodoni Moda";
+  src: url("fonts/BodoniModa-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bodoni Moda";
+  src: url("fonts/BodoniModa-Italic-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --paper: #F6F1E7;
+  --paper-2: #EFE7D8;
+  --ink: #2A1C13;          /* walnut, darkest: body text */
+  --walnut: #5A3B27;
+  --muted: #5E4B3E;
+  --chinar: #8F3416;       /* rust: headings accents, links */
+  --saffron: #D99A1E;      /* decorative only, never text */
+  --dal: #22625E;          /* Dal Lake blue-green */
+  --rule: #D8CCB8;
+  --serif: "Bodoni Moda", "Didot", "Bodoni 72", "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --gap: 2rem;
+  --c-flooded: #E69F00;
+  --c-persistent: #0072B2;
+  --c-lost: #F0E442;
+  --c-na: #CC79A7;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 1.0625rem/1.65 var(--sans);
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--chinar); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { color: var(--dal); }
+:focus-visible { outline: 3px solid var(--dal); outline-offset: 3px; }
+
+.skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: var(--paper); padding: .5rem 1rem; z-index: 2000; }
+.skip:focus { left: 1rem; top: 1rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.span-all { grid-column: 1 / -1; }
+.span-wide { grid-column: 1 / span 8; }
+
+/* Type */
+h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--ink); margin: 0; }
+h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); line-height: 1.02; letter-spacing: -0.01em; grid-column: 1 / span 10; }
+h2 { font-size: clamp(1.8rem, 3.2vw, 2.5rem); line-height: 1.1; margin: 0 0 2rem; }
+h3 { font-size: 1.3rem; line-height: 1.2; margin: 0 0 .5rem; }
+p { margin: 0 0 1rem; }
+.note { color: var(--muted); font-size: .95rem; }
+
+/* Masthead */
+.masthead { padding: 4.5rem 1.5rem 3rem; }
+.kicker { grid-column: 1 / -1; font-variant: small-caps; letter-spacing: .12em; color: var(--chinar); margin-bottom: 1.25rem; }
+.dek { grid-column: 1 / span 7; font-family: var(--serif); font-style: italic; font-size: 1.35rem; line-height: 1.45; color: var(--walnut); margin-top: 1.5rem; }
+
+section { padding: 1rem 0 1.5rem; }
+
+/* Khatamband-style divider: a hairline with small interlocking knots. */
+hr.khatam {
+  border: 0;
+  height: 14px;
+  max-width: 76rem;
+  margin: 3.5rem auto;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='14' viewBox='0 0 44 14'%3E%3Cg fill='none' stroke='%238F3416' stroke-width='0.9'%3E%3Cpath d='M0 7h15M29 7h15'/%3E%3Cpath d='M22 1l6 6-6 6-6-6z'/%3E%3Cpath d='M17.8 2.8h8.4v8.4h-8.4z'/%3E%3C/g%3E%3Ccircle cx='22' cy='7' r='1.1' fill='%23D99A1E'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center;
+  opacity: .8;
+}
+
+/* Map */
+.map-wrap { grid-column: 1 / span 9; }
+#map {
+  height: min(72vh, 660px);
+  min-height: 420px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+}
+#map:focus-visible { outline: 3px solid var(--dal); outline-offset: 3px; }
+.map-side { grid-column: 10 / span 3; font-size: .95rem; }
+.views { display: flex; gap: .5rem; margin-bottom: 1.25rem; }
+.views button, .base label { font: inherit; }
+.views button {
+  flex: 1;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--walnut);
+  padding: .5rem .6rem;
+  cursor: pointer;
+}
+.views button[aria-pressed="true"] { background: var(--walnut); color: var(--paper); }
+.base { border: 0; border-top: 1px solid var(--rule); padding: .75rem 0 0; margin: 0 0 1.25rem; }
+.base legend { font-family: var(--serif); font-size: 1.1rem; padding: 0; margin-bottom: .4rem; }
+.base label { display: flex; gap: .5rem; align-items: baseline; margin-bottom: .35rem; }
+.legend-title { font-size: 1.1rem; border-top: 1px solid var(--rule); padding-top: .75rem; }
+.legend { list-style: none; padding: 0; margin: 0 0 1rem; }
+.legend li { display: flex; gap: .6rem; align-items: flex-start; margin-bottom: .45rem; line-height: 1.35; }
+.sw { flex: 0 0 1.1rem; height: 1.1rem; border: 1px solid rgba(42, 28, 19, .45); margin-top: .1rem; }
+.sw-flooded { background: var(--c-flooded); }
+.sw-persistent { background: var(--c-persistent); }
+.sw-lost { background: var(--c-lost); }
+.sw-na { background: var(--c-na); }
+.sw-outline { background: transparent; border: 2px dashed var(--ink); }
+.leaflet-container { font: .85rem var(--sans); background: var(--paper-2); }
+.leaflet-control-attribution { background: rgba(246, 241, 231, .9) !important; color: var(--ink); }
+.leaflet-control-attribution a { color: var(--chinar); }
+
+/* Before / after */
+.ba { margin: 0; }
+.ba-frame { position: relative; overflow: hidden; border: 1px solid var(--rule); background: var(--paper-2); --pos: 50%; }
+.ba-after { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+.ba-after img { width: 100%; }
+.ba-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--paper); box-shadow: 0 0 0 1px rgba(42, 28, 19, .5); pointer-events: none; }
+.ba-label { display: block; margin: 1rem 0 .3rem; font-size: .95rem; }
+#ba-range { width: 100%; accent-color: var(--chinar); }
+.ba figcaption { color: var(--muted); font-size: .95rem; margin-top: .6rem; }
+
+/* Numbers */
+.fig { grid-column: span 3; border-top: 2px solid var(--chinar); padding-top: 1rem; margin-bottom: 2rem; }
+.fig h3 { font-size: 1.05rem; font-family: var(--sans); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--walnut); }
+.big { font-family: var(--serif); font-size: clamp(2.2rem, 4vw, 3.1rem); line-height: 1.05; color: var(--ink); margin: .2rem 0 .8rem; font-variant-numeric: lining-nums; }
+
+/* Method */
+.steps { list-style: none; counter-reset: step; padding: 0; margin: 0 0 1rem; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 3.2rem 1fr; column-gap: 1rem; margin-bottom: 1.6rem; }
+.steps li::before { content: counter(step, upper-roman); font-family: var(--serif); font-size: 1.6rem; color: var(--chinar); grid-row: 1 / span 2; line-height: 1.1; }
+.steps h3 { grid-column: 2; }
+.steps p { grid-column: 2; }
+
+/* Limits */
+.limits { padding-left: 1.1rem; margin: 0; }
+.limits li { margin-bottom: 1rem; }
+.limits li::marker { color: var(--chinar); }
+
+/* Table */
+.table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+th, td { text-align: left; vertical-align: top; padding: .7rem .8rem .7rem 0; border-bottom: 1px solid var(--rule); }
+th { font-family: var(--serif); font-weight: 500; font-size: 1.05rem; border-bottom: 1px solid var(--walnut); }
+td:nth-child(2) { white-space: nowrap; font-variant-numeric: lining-nums; }
+
+/* Sources */
+.col { grid-column: span 6; }
+.plain, .credits { list-style: none; padding: 0; margin: 0 0 1.5rem; }
+.plain li, .credits li { margin-bottom: .7rem; }
+.credits li { font-size: .95rem; }
+.credit-line { font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--walnut); border-top: 1px solid var(--rule); padding-top: 1.25rem; margin-top: 1rem; }
+
+footer { padding: 2rem 1.5rem 4rem; color: var(--muted); font-size: .9rem; }
+
+/* Responsive */
+@media (max-width: 960px) {
+  .map-wrap, .map-side, .span-wide, .dek, h1 { grid-column: 1 / -1; }
+  .map-side { margin-top: 1.5rem; }
+  .fig { grid-column: span 6; }
+  .col { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  :root { --gap: 1rem; }
+  .grid { padding: 0 1rem; }
+  .masthead { padding: 3rem 1rem 2rem; }
+  .fig { grid-column: 1 / -1; }
+  #map { min-height: 360px; height: 62vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}
+@media print {
+  #map, .map-side, .views, .ba-label, #ba-range, hr.khatam { display: none; }
+}
+
+/* Keep class edges crisp when zoomed in. */
+.flood-overlay { image-rendering: pixelated; image-rendering: crisp-edges; }

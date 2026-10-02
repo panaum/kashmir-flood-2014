@@ -1,0 +1,17 @@
+{
+  "note": "Published figures provided by the project owner as context only; not independently verified. The analysis was not adjusted toward them.",
+  "figures": [
+    {"source": "J&K Department of Environment and Remote Sensing with ISRO, as reported by Kashmir Life",
+     "figure": "358.6 km2", "figure_km2": 358.6, "approx": false,
+     "date_range": "2014-09-10", "sensor": "not stated in the information recorded here",
+     "difference": "Same date. Sensor, method and area definition not recorded here, so the difference cannot be attributed."},
+    {"source": "Kumar and Acharya, Natural Hazards, 2016",
+     "figure": "about 488 km2", "figure_km2": 488, "approx": true,
+     "date_range": "2014-09-10 to 2014-10-12", "sensor": "Landsat",
+     "difference": "Covers a month of images rather than one date; same sensor family."},
+    {"source": "Bhatt et al., Geomatics, Natural Hazards and Risk, 2017",
+     "figure": "about 557 km2", "figure_km2": 557, "approx": true,
+     "date_range": "2014-09-08 to 2014-09-23", "sensor": "radar",
+     "difference": "Covers two weeks rather than one date, and radar sees through cloud and records water differently from an optical index."}
+  ]
+}

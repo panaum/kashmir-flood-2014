@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Kashmir Flood, September 2014</title>
+<meta name="description" content="A measurement of the September 2014 flood in the Kashmir valley from Landsat 8 satellite images, with its method, limits and sources.">
+<meta name="referrer" content="no-referrer">
+<link rel="preload" href="fonts/BodoniModa-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="masthead grid">
+  <p class="kicker">Kashmir valley · <span data-k="dates.flood" data-fmt="date"></span></p>
+  <h1>The flood of September 2014</h1>
+  <p class="dek">What one satellite image, taken at <span data-k="dates.flood_time_utc"></span> UTC on
+    <span data-k="dates.flood" data-fmt="date"></span>, shows of the water in the Kashmir valley, and
+    what it cannot show.</p>
+</header>
+
+<main id="main">
+
+<section id="map-section" class="grid" aria-labelledby="map-title">
+  <h2 id="map-title" class="span-all">Where the water stood</h2>
+  <div class="map-wrap">
+    <div id="map" role="region" aria-label="Interactive map of the flood in the Kashmir valley. Use arrow keys to pan and plus or minus to zoom." tabindex="0"></div>
+    <noscript><p class="note">The interactive map needs JavaScript. The same information is in the numbers below and in METHODS.md.</p></noscript>
+  </div>
+  <aside class="map-side" aria-label="Map controls and legend">
+    <div class="views" role="group" aria-label="Map view">
+      <button type="button" data-view="srinagar" aria-pressed="true">Srinagar</button>
+      <button type="button" data-view="valley" aria-pressed="false">Whole valley</button>
+    </div>
+    <fieldset class="base">
+      <legend>Base map</legend>
+      <label><input type="radio" name="base" value="landsat" checked> <span>Landsat 8, <span data-k="dates.before" data-fmt="date"></span> (hosted on this site)</span></label>
+      <label><input type="radio" name="base" value="osm"> <span>Street map (loads tiles from openstreetmap.org)</span></label>
+    </fieldset>
+    <h3 class="legend-title">Legend</h3>
+    <ul class="legend">
+      <li><span class="sw sw-flooded" aria-hidden="true"></span> <span>Flooded on <span data-k="dates.flood" data-fmt="date"></span>, dry on <span data-k="dates.before" data-fmt="date"></span></span></li>
+      <li><span class="sw sw-persistent" aria-hidden="true"></span> <span>Water on both dates (river, lakes)</span></li>
+      <li><span class="sw sw-lost" aria-hidden="true"></span> <span>Water in August, not in September</span></li>
+      <li><span class="sw sw-na" aria-hidden="true"></span> <span>Not assessed (cloud or shadow)</span></li>
+      <li><span class="sw sw-outline" aria-hidden="true"></span> <span>Edge of the analysis area</span></li>
+    </ul>
+    <p class="note">Each square is <span data-k="method.pixel_m"></span> m across. Outside the outlined area nothing was measured. The Landsat
+      base map is shown in false colour: plants green, bare ground brown, water dark.</p>
+  </aside>
+</section>
+
+<hr class="khatam" aria-hidden="true">
+
+<section id="before-after" class="grid" aria-labelledby="ba-title">
+  <h2 id="ba-title" class="span-all">Before and during</h2>
+  <figure class="ba span-wide">
+    <div class="ba-frame">
+      <img src="img/srinagar_2014-08-25.jpg" width="1000" height="925" loading="lazy" decoding="async"
+           alt="Srinagar on 25 August 2014 in false colour: the Jhelum winds through green fields and the city; Dal Lake lies dark to the north-east.">
+      <div class="ba-after" id="ba-after">
+        <img src="img/srinagar_2014-09-10.jpg" width="1000" height="925" loading="lazy" decoding="async"
+             alt="Srinagar on 10 September 2014 in false colour: dark blue floodwater covers wide areas on both sides of the Jhelum and parts of the city.">
+      </div>
+      <div class="ba-line" id="ba-line" aria-hidden="true"></div>
+    </div>
+    <label class="ba-label" for="ba-range">Slide to compare: left part shows <span data-k="dates.flood" data-fmt="date"></span>, right part <span data-k="dates.before" data-fmt="date"></span></label>
+    <input id="ba-range" type="range" min="0" max="100" value="50" step="1">
+    <figcaption>Landsat 8 false colour (shortwave infrared, near infrared, red), identical colour
+      scale for both dates. Floodwater appears dark blue.</figcaption>
+  </figure>
+</section>
+
+<hr class="khatam" aria-hidden="true">
+
+<section id="numbers" class="grid" aria-labelledby="num-title">
+  <h2 id="num-title" class="span-all">What was measured</h2>
+  <article class="fig">
+    <h3>Flooded area</h3>
+    <p class="big"><span data-k="flood.flooded_km2" data-fmt="dec1"></span> km²</p>
+    <p>Range <span data-k="flood.range_km2.0" data-fmt="int"></span>–<span data-k="flood.range_km2.1" data-fmt="int"></span> km²
+      depending on the water cut-off chosen. On the valley floor connected to Srinagar
+      (<span data-k="method.analysis_area_km2" data-fmt="int"></span> km²), at one moment on
+      <span data-k="dates.flood" data-fmt="date"></span>.</p>
+  </article>
+  <article class="fig">
+    <h3>Lakes and wetlands</h3>
+    <p class="big"><span data-k="flood.outside_lakes_wetlands_km2" data-fmt="int"></span> km²</p>
+    <p>of the flooded area lay outside mapped lakes and wetlands;
+      <span data-k="flood.inside_lakes_wetlands_km2" data-fmt="int"></span> km² lay inside them, including lake
+      surface that was covered by plants in August, such as parts of Wular. Permanent water on both dates:
+      <span data-k="flood.persistent_km2" data-fmt="int"></span> km².</p>
+  </article>
+  <article class="fig">
+    <h3>Roads</h3>
+    <p class="big"><span data-k="roads.motor_flooded_km" data-fmt="int"></span> km</p>
+    <p>of the <span data-k="roads.motor_total_km" data-fmt="int"></span> km of motor roads in today's OpenStreetMap
+      lie on ground that was flooded; <span data-k="roads.motor_srinagar_flooded_km" data-fmt="int"></span> km of
+      them in and around Srinagar.</p>
+  </article>
+  <article class="fig">
+    <h3>Buildings</h3>
+    <p class="big">About <span data-k="buildings.about_words"></span></p>
+    <p>buildings standing today on ground that flooded
+      (<span data-k="buildings.footprints_flooded" data-fmt="int"></span> footprints counted by their centre,
+      <span data-k="buildings.footprints_flooded_overlap" data-fmt="int"></span> if any overlap counts). From
+      outlines traced by computer in images of <span data-k="buildings.imagery_start"></span>–<span data-k="buildings.imagery_end"></span>:
+      not a count of buildings flooded in 2014, and likely low in the old city.</p>
+  </article>
+  <p class="note span-all">Not assessed because of cloud: <span data-k="flood.not_assessed_km2" data-fmt="dec2"></span> km²
+    (<span data-k="flood.not_assessed_pct" data-fmt="dec3"></span> % of the area). Every number on this page is read from
+    <a href="data/results.json">results.json</a>, which the scripts write from the recorded analysis outputs.</p>
+</section>
+
+<hr class="khatam" aria-hidden="true">
+
+<section id="method" class="grid" aria-labelledby="method-title">
+  <h2 id="method-title" class="span-all">How it was measured</h2>
+  <ol class="steps span-wide">
+    <li><h3>Two pictures from space</h3>
+      <p>The Landsat 8 satellite photographed the valley on <span data-k="dates.before" data-fmt="date"></span>,
+        before the flood, and again on <span data-k="dates.flood" data-fmt="date"></span>, during it. Each image is
+        a grid of squares <span data-k="method.pixel_m"></span> m across.</p></li>
+    <li><h3>Find the water</h3>
+      <p>Water absorbs shortwave infrared light that land reflects. A simple ratio of green to shortwave
+        infrared light (the MNDWI index) marks a square as water when it is above
+        <span data-k="method.threshold"></span>, a cut-off found automatically from the flood-day picture.</p></li>
+    <li><h3>Set aside what cannot be seen</h3>
+      <p>Squares hidden by cloud, cloud shadow or snow on either date are left out and reported, not guessed.</p></li>
+    <li><h3>Compare before and during</h3>
+      <p>A square that is water in September but was dry in August counts as flooded. Water on both dates, the
+        river and the lakes, does not. Only the valley floor below <span data-k="method.valley_floor_max_m" data-fmt="int"></span> m
+        that connects to Srinagar is measured.</p></li>
+    <li><h3>Count what stands on it</h3>
+      <p>Today's road map and building outlines are laid over the flood map, and the roads and buildings on
+        flooded squares are counted.</p></li>
+  </ol>
+  <p class="note span-all">The rules for each step were written down and committed before the result was
+    computed. Every choice and number is in <a data-href="links.methods" href="#">METHODS.md</a>.</p>
+</section>
+
+<hr class="khatam" aria-hidden="true">
+
+<section id="limits" class="grid" aria-labelledby="limits-title">
+  <h2 id="limits-title" class="span-all">What this cannot tell you</h2>
+  <ul class="limits span-wide">
+    <li><strong>One moment, not the whole flood.</strong> The image was taken at <span data-k="dates.flood_time_utc"></span> UTC
+      on <span data-k="dates.flood" data-fmt="date"></span>. Water rose and fell over many days; this is not the largest extent.</li>
+    <li><strong>The old city is probably undercounted.</strong> Where roofs fill most of a 30 m square, water in the
+      lanes between them may not register. Dense blocks often appear dry inside flooded ground. This was not tested.</li>
+    <li><strong>Lakes covered by plants.</strong> In August parts of Wular and Dal were covered by plants and looked
+      like land. Where they were open water in September they count as flooded, which is why some flooding lies
+      inside lakes and wetlands.</li>
+    <li><strong>Today's maps, not 2014's.</strong> Roads come from OpenStreetMap as of
+      <span data-k="roads.osm_timestamp" data-fmt="date"></span>. Buildings come from images of
+      <span data-k="buildings.imagery_start"></span>–<span data-k="buildings.imagery_end"></span>. Some of these buildings
+      did not exist in 2014; some that did are gone. The building figure is not a count of buildings flooded.</li>
+    <li><strong>Clouds the satellite's own mask missed</strong> hide what is under them, roughly
+      <span data-k="flood.unflagged_cloud_u2_km2" data-fmt="dec1"></span> km² by a rough estimate.</li>
+    <li><strong>The cut-off matters.</strong> Moving the water cut-off within a reasonable range changes the flooded
+      area from <span data-k="flood.range_km2.0" data-fmt="int"></span> to <span data-k="flood.range_km2.1" data-fmt="int"></span> km².</li>
+    <li><strong>Only the valley floor was measured</strong>, below <span data-k="method.valley_floor_max_m" data-fmt="int"></span> m
+      and connected to Srinagar. Flooding elsewhere is not counted. The elevation model includes buildings and trees.</li>
+  </ul>
+</section>
+
+<hr class="khatam" aria-hidden="true">
+
+<section id="context" class="grid" aria-labelledby="ctx-title">
+  <h2 id="ctx-title" class="span-all">Other published figures</h2>
+  <p class="span-wide">Shown for context only. This measurement was not adjusted toward them. The figures were
+    supplied by the project and have not been checked against the original publications here.</p>
+  <div class="table-wrap span-all">
+    <table id="published">
+      <caption class="sr-only">Published flood-area figures and how they differ from this measurement</caption>
+      <thead><tr><th scope="col">Source</th><th scope="col">Figure</th><th scope="col">Dates</th>
+        <th scope="col">Sensor</th><th scope="col">How it differs</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="note span-all">This measurement: one Landsat 8 image on <span data-k="dates.flood" data-fmt="date"></span>,
+    optical index at <span data-k="method.pixel_m"></span> m, valley floor connected to Srinagar.</p>
+</section>
+
+<hr class="khatam" aria-hidden="true">
+
+<section id="sources" class="grid" aria-labelledby="src-title">
+  <h2 id="src-title" class="span-all">Sources, credits and licences</h2>
+  <div class="col">
+    <h3>Read further</h3>
+    <ul class="plain">
+      <li><a data-href="links.repository" href="#">Code and history (GitHub)</a></li>
+      <li><a data-href="links.methods" href="#">METHODS.md</a>: every rule, number and check</li>
+      <li><a data-href="links.data" href="#">DATA.md</a>: every input file and its checksum</li>
+      <li><a href="data/results.json">results.json</a> and <a href="data/layers.json">layers.json</a>: the data behind this page</li>
+    </ul>
+    <h3>This work</h3>
+    <p>Code: MIT licence. Text, figures and this page: CC BY 4.0. Data derived from OpenStreetMap or
+      Microsoft footprints remain under the Open Database License.</p>
+  </div>
+  <div class="col">
+    <h3>Data</h3>
+    <ul class="credits">
+      <li><strong>Landsat 8</strong> Collection 2 Level-2 surface reflectance. Image courtesy of the U.S. Geological
+        Survey. Public domain. doi:10.5066/P9OGBGM6. Accessed through the Microsoft Planetary Computer.</li>
+      <li><strong>Copernicus DEM GLO-30</strong>: produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and ©
+        Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights
+        reserved. The organisations in charge of the Copernicus programme by law or by delegation do not incur any
+        liability for any use of the Copernicus WorldDEM-30. Accessed through the Microsoft Planetary Computer.</li>
+      <li><strong>OpenStreetMap</strong> © OpenStreetMap contributors, Open Database License 1.0. Lakes and wetlands
+        through the Overpass API; roads, buildings and place names through a Geofabrik extract. Optional street map
+        tiles © OpenStreetMap contributors.</li>
+      <li><strong>Microsoft Building Footprints</strong> (version <span data-k="buildings.ms_version"></span>),
+        Open Database License 1.0, through the Microsoft Planetary Computer.</li>
+    </ul>
+    <h3>Software and type</h3>
+    <ul class="credits">
+      <li>Leaflet, BSD 2-Clause licence. Bodoni Moda, SIL Open Font License 1.1. Both hosted on this site.</li>
+      <li>No data provider has reviewed or endorses this work.</li>
+    </ul>
+  </div>
+  <p class="credit-line span-all">The analysis was directed by Anaum Pandit. The code was written with Claude Code.</p>
+</section>
+
+</main>
+
+<footer class="grid">
+  <p class="span-all">No cookies, no analytics, no tracking. The page loads nothing from other sites unless you switch
+    the map to the street map.</p>
+</footer>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

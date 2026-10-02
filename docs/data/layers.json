@@ -1,0 +1,105 @@
+{
+ "note": "Display layers for the web map only. Counts and areas come from the analysis files, not from these images.",
+ "layers": {
+  "flood": {
+   "file": "img/flood_display.png",
+   "bounds_latlon": [
+    [
+     33.497251640239256,
+     74.18953592144335
+    ],
+    [
+     34.60287632911973,
+     75.40536899571924
+    ]
+   ],
+   "source": "data/flood/flood_classes.tif + data/flood/analysis_area.tif (EPSG:32643, 30 m)",
+   "method": "classes 1 flooded, 2 persistent water, 3 water lost, 4 not assessed; reprojected to EPSG:3857 with nearest-neighbour resampling (rasterio calculate_default_transform), written as a paletted PNG with index 0 transparent",
+   "size_px": [
+    3731,
+    4095
+   ],
+   "pixel_m_mercator": 36.28,
+   "colours": {
+    "flooded": "#E69F00",
+    "persistent_water": "#0072B2",
+    "water_lost": "#F0E442",
+    "not_assessed": "#CC79A7"
+   },
+   "pixels_source": {
+    "flooded": 418453,
+    "persistent_water": 40950,
+    "water_lost": 262,
+    "not_assessed": 614
+   },
+   "pixels_display": {
+    "flooded": 419542,
+    "persistent_water": 41080,
+    "water_lost": 264,
+    "not_assessed": 607
+   }
+  },
+  "base": {
+   "file": "img/base_2014-08-25.jpg",
+   "bounds_latlon": [
+    [
+     33.49717971451736,
+     74.18953592144335
+    ],
+    [
+     34.60287632911973,
+     75.40549549002755
+    ]
+   ],
+   "source": "data/clipped/pre_2014-08-25_{swir1,nir,red}.tif",
+   "method": "R=SWIR1 G=NIR B=Red, linear stretch as DATA.md (2nd-98th percentile), 8-bit; reprojected to EPSG:3857 at 80 m with bilinear resampling; progressive JPEG quality 80",
+   "size_px": [
+    1692,
+    1857
+   ]
+  },
+  "slider": {
+   "files": [
+    "img/srinagar_2014-08-25.jpg",
+    "img/srinagar_2014-09-10.jpg"
+   ],
+   "bbox_wgs84": [
+    74.65,
+    33.95,
+    74.95,
+    34.2
+   ],
+   "method": "R=SWIR1 G=NIR B=Red, same stretch as DATA.md, native 30 m UTM grid, no reprojection, JPEG quality 88",
+   "size_px": [
+    924,
+    926
+   ]
+  },
+  "outline": {
+   "file": "data/analysis_area.geojson",
+   "method": "pixel outlines of data/flood/analysis_area.tif, merged, simplified with a 30 m tolerance (shapely), converted to WGS84"
+  }
+ },
+ "views": {
+  "srinagar": [
+   [
+    33.95,
+    74.65
+   ],
+   [
+    34.2,
+    74.95
+   ]
+  ],
+  "valley": [
+   [
+    33.497251640239256,
+    74.18953592144335
+   ],
+   [
+    34.60287632911973,
+    75.40536899571924
+   ]
+  ]
+ }
+}
