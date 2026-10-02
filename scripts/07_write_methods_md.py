@@ -235,6 +235,12 @@ def main():
               f"| {pct(s['class_differs_fraction'], 3)} ({s['class_differs_pixels']} px) |")
     w("")
 
+    # ---- Step 3
+    fr = json.loads((ROOT / "data" / "flood_report.json").read_text())
+    rs = json.loads((ROOT / "data" / "radsat_report.json").read_text())
+    osm = json.loads((ROOT / "data" / "osm_report.json").read_text())
+    step3(w, fr, rs, osm)
+
     # ---- Limitations
     w("## Limitations noted\n")
     sat = {}
@@ -242,30 +248,195 @@ def main():
         m = json.loads((ROOT / sc["mtl_file"]).read_text())["LANDSAT_METADATA_FILE"]
         a = m["IMAGE_ATTRIBUTES"]
         sat[sc["scene_id"]] = (a["SATURATION_BAND_3"], a["SATURATION_BAND_6"])
-    w("- Radiometric saturation is not screened. The MTL files report saturation "
-      "present (Y/N) in green (band 3) / SWIR1 (band 6) as: " +
-      "; ".join(f"`{k}` {v[0]}/{v[1]}" for k, v in sat.items()) +
-      ". The QA_RADSAT band, which marks saturated pixels, was not downloaded.")
-    w("- QA_PIXEL misses some small clouds. Visual observation, not measured: on "
-      "2014-09-10 small white clouds next to the Srinagar airport box "
-      "(`previews/water_sanity_sites.png`) are mostly not flagged. Unflagged cloud is "
-      "counted as valid, not-water, and hides what is beneath it.")
+    w("- Saturation: the MTL files report saturation present (Y/N) in green (band 3) / "
+      "SWIR1 (band 6) as: " + "; ".join(f"`{k}` {v[0]}/{v[1]}" for k, v in sat.items()) +
+      ". QA_RADSAT was downloaded in step 3; it marks no green or SWIR1 saturation "
+      "inside the clip box on either date (" + ", ".join(
+          f"{d}: {v['pixels_green_saturated']} green / {v['pixels_swir1_saturated']} SWIR1 "
+          "pixels" for d, v in rs["mosaics"].items()) + "). The step 2 water masks were "
+      "made before QA_RADSAT was available; with no saturated pixels in the clip box "
+      "they are unaffected.")
+    w("- QA_PIXEL misses some small clouds (visible near the Srinagar airport box on "
+      "2014-09-10, `previews/water_sanity_sites.png`). Unflagged cloud is counted as "
+      "valid, not-water, and hides what is beneath it. Estimated in step 3, section U.")
     w("- The DEM is a surface model and its vertical datum is not stated in the files.")
-    w("- The 2014-08-25 Otsu threshold is not well supported by its histogram (section 5).")
-    w(f"- Row 036 / 037 reflectance offsets (DATA.md) remain in the mosaic; their effect "
-      f"on the water class is in section 8.")
+    w("- The 2014-08-25 Otsu threshold is not well supported by its histogram (section 5); "
+      "step 3 uses the 2014-09-10 threshold on both dates.")
+    w("- Row 036 / 037 reflectance offsets (DATA.md) remain in the mosaic; their effect "
+      "on the water class is in section 8.")
+    w("- Water covered by vegetation (e.g. the Wular box on 2014-08-25) is not detected "
+      "as water by MNDWI. Such areas that are open water on 2014-09-10 count as flooded.")
+    w("- OpenStreetMap polygons are current (downloaded "
+      f"{osm['download_started_utc']}), not a 2014 map.")
     w(f"- Mosaic grid and clip box as in DATA.md (bbox {mosaic['bbox_wgs84']}).\n")
 
     w("## Previews (`previews/`)\n")
     for p in ("mndwi_histogram_2014-08-25.png", "mndwi_histogram_2014-09-10.png",
               "water_srinagar_side_by_side.png", "water_valley_side_by_side.png",
-              "water_sanity_sites.png"):
+              "water_sanity_sites.png", "flood_srinagar.png", "flood_valley.png"):
         w(f"- `previews/{p}`")
-    w("\nOverlay colours: cyan = water, magenta = masked, darkened = above "
-      f"{wr['valley_floor_max_m']:g} m. Base image and stretch as in DATA.md.\n")
+    w("\nWater overlays: cyan = water, magenta = masked, darkened = above "
+      f"{wr['valley_floor_max_m']:g} m. Flood overlays: red = flooded, blue = persistent "
+      "water, yellow = water lost, magenta = not assessed, darkened = outside the "
+      "analysis area. Base image and stretch as in DATA.md.\n")
 
     (ROOT / "METHODS.md").write_text("\n".join(L))
     print("wrote METHODS.md")
+
+
+def step3(w, fr, rs, osm):
+    """Step 3 results, all read from data/flood_report.json and friends."""
+    p, v, na = fr["primary"], fr["variants"], fr["not_assessed"]
+    w("## Step 3 results: flood extent\n")
+    w(f"Rules: `{fr['rules_file']}` (sha256 `{fr['rules_sha256']}`), reproduced above. "
+      f"Analysis area: {fr['analysis_area_km2']} km2; valid on both dates: "
+      f"{fr['valid_both_km2']} km2.\n")
+
+    w("### Primary result\n")
+    w(f"**Flooded area: {p['flooded_km2']} km2** (water on 2014-09-10, not water on "
+      f"2014-08-25, MNDWI threshold {p['t_post']:.3f} on both dates).\n")
+    w("| Class | km2 |")
+    w("|---|---|")
+    w(f"| Flooded | {p['flooded_km2']} |")
+    w(f"| Persistent water (both dates) | {p['persistent_km2']} |")
+    w(f"| Water lost (Aug water, not Sep) | {p['lost_km2']} |")
+    w(f"| Water on 2014-08-25 | {p['water_pre_km2']} |")
+    w(f"| Water on 2014-09-10 | {p['water_post_km2']} |")
+    w(f"\nWater lost is {p['lost_km2']} km2, "
+      f"{100 * p['lost_km2'] / p['water_pre_km2']:.2f} % of the August water.\n")
+    w(f"Rule 4 (SWIR1 <= 0, green > 0 counted as water): "
+      + "; ".join(f"{d} {k} km2" for d, k in fr["rule4_swir_le0_water_km2"].items())
+      + f"; flooded pixels that are water only by rule 4: {fr['rule4_flooded_km2']} km2. "
+      f"Saturated (green or SWIR1) in the analysis area: "
+      + "; ".join(f"{d} {k} km2" for d, k in fr["saturated_in_area_km2"].items()) + ".\n")
+    w("Files: `data/flood/flood_mask.tif` (1 = flooded, 0 = assessed and not flooded, "
+      "255 = outside analysis area or not assessed), `data/flood/flood_classes.tif` "
+      "(0 = not water either date, 1 = flooded, 2 = persistent, 3 = lost, 255 = outside "
+      "or not assessed), `data/flood/analysis_area.tif`.\n")
+
+    w("### Sensitivity\n")
+    w("| Variant | Threshold Aug / Sep | Flooded km2 | Persistent km2 | Lost km2 |")
+    w("|---|---|---|---|---|")
+    rows = [("Primary (rules)", p), ("(a) each date's own Otsu", v["a_own_otsu"]),
+            ("(b) 0 on both dates", v["b_zero"]),
+            ("(c) 0.127 - 0.05 on both", v["c_minus_0.05"]),
+            ("(c) 0.127 + 0.05 on both", v["c_plus_0.05"])]
+    for name, x in rows:
+        w(f"| {name} | {x['t_pre']:.3f} / {x['t_post']:.3f} | {x['flooded_km2']} "
+          f"| {x['persistent_km2']} | {x['lost_km2']} |")
+    w("")
+
+    w("### Not assessed (how far the result is a lower bound)\n")
+    w(f"Analysis-area pixels not valid on at least one date: **{na['km2']} km2** "
+      f"({100 * na['fraction_of_area']:.3f} % of the analysis area); invalid on "
+      f"2014-08-25: {na['invalid_pre_km2']} km2, on 2014-09-10: {na['invalid_post_km2']} km2. "
+      "Reasons (km2, flags overlap):\n")
+    keys = list(next(iter(na["reasons_km2_by_date"].values())))
+    w("| Date | " + " | ".join(k.replace("_", " ") for k in keys) + " |")
+    w("|---|" + "---|" * len(keys))
+    for d, r in na["reasons_km2_by_date"].items():
+        w(f"| {d} | " + " | ".join(str(r[k]) for k in keys) + " |")
+    w("\nThis covers only masked pixels inside the analysis area. Flooding outside the "
+      "analysis area (higher than 1,800 m, or low ground not connected to Srinagar) and "
+      "flooding under unflagged cloud (section U) is not counted.\n")
+
+    u = fr["unflagged_clouds"]
+    w("### U. Unflagged clouds on 2014-09-10 (estimate; masks not changed)\n")
+    w(f"Method as fixed in rules U1-U5. Sun azimuth {u['sun_azimuth_deg']:.2f} deg, "
+      f"elevation {u['sun_elevation_deg']:.2f} deg (2014-09-10 row 036 MTL). Valid analysis "
+      f"area on 2014-09-10: {u['valid_post_km2']} km2.\n")
+    w("| Estimate | km2 | Flooded km2 inside |")
+    w("|---|---|---|")
+    w(f"| U1 QA_PIXEL medium-confidence cloud, not flagged | {u['u1_medium_conf_cloud_km2']} "
+      f"| {u['u1_flooded_km2']} |")
+    w(f"| U2 bright-and-white test | {u['u2_bright_white_km2']} "
+      f"({100 * u['u2_fraction_of_valid']:.3f} % of valid) | {u['u2_flooded_km2']} |")
+    w(f"| U3 shadow zone of U2 (upper bound) | {u['u3_shadow_zone_km2']} "
+      f"| {u['u3_shadow_zone_flooded_km2']} |")
+    w(f"| U3 dark part of the zone | {u['u3_dark_km2']} | {u['u3_dark_flooded_km2']} |")
+    w(f"\nU4 control: the U2 test fires on {u['u4_control_bright_white_km2']} km2 "
+      f"({100 * u['u4_control_fraction']:.3f} %) of the {u['u4_control_pre_clear_km2']} km2 "
+      "flagged clear on 2014-08-25. The test is rough: it uses no blue or thermal band, "
+      "and the shadow zone assumes cloud heights of 500 to 5,000 m.\n")
+
+    o = fr["osm"]
+    w("### OpenStreetMap water bodies and wetlands\n")
+    w(f"Downloaded {osm['download_started_utc']} from {osm['endpoint']} (OSM data as of "
+      f"{osm['osm_base_timestamp']}); response sha256 `{osm['response_sha256']}`, "
+      f"{osm['elements']} elements, saved as `data/osm/overpass_response.json`. "
+      f"{osm['licence']}.\n")
+    w("| Tag | Ways | Relations | Polygons built |")
+    w("|---|---|---|---|")
+    for k, c in osm["by_tag"].items():
+        w(f"| {k} | {c['way']} | {c['relation']} | {c['polygons']} |")
+    w(f"\nPolygons cover {o['osm_polygons_in_analysis_area_km2']} km2 of the analysis area.\n")
+    w("| | Inside OSM water/wetland | Outside |")
+    w("|---|---|---|")
+    w(f"| Flooded km2 | {o['flooded_inside_km2']} | {o['flooded_outside_km2']} |")
+    w(f"| Persistent water km2 | {o['persistent_inside_km2']} | {o['persistent_outside_km2']} |")
+    w("\nOSM polygons are a present-day map. Flooded area inside them is lake or wetland "
+      "surface (as mapped today) that was not water by MNDWI on 2014-08-25, for example "
+      "the vegetated Wular box (section 7).\n")
+
+    s = fr["srinagar"]
+    w("### Srinagar box\n")
+    w(f"Box lon 74.65-74.95, lat 33.95-34.20 ({s['pixels_in_box']} pixels; analysis area "
+      f"in the box {s['analysis_area_km2']} km2): **flooded {s['flooded_km2']} km2**, "
+      f"persistent water {s['persistent_km2']} km2, not assessed {s['not_assessed_km2']} km2.\n")
+
+    q = fr["qa_water_bit"]
+    w("### Independent check: QA_PIXEL water bit (bit 7)\n")
+    w("Our water (threshold 0.127, rule 4 included) against the USGS water bit, on "
+      "valid analysis-area pixels.\n")
+    w("| Date | Agreement | Cohen's kappa | Ours water km2 | USGS water km2 | Both | "
+      "Ours only | USGS only |")
+    w("|---|---|---|---|---|---|---|---|")
+    for d in ("2014-08-25", "2014-09-10"):
+        x = q[d]
+        w(f"| {d} | {100 * x['agreement']:.2f} % | {x['cohen_kappa']} | {x['ours_water_km2']} "
+          f"| {x['usgs_water_km2']} | {x['both_water_km2']} | {x['ours_water_usgs_not_km2']} "
+          f"| {x['usgs_water_ours_not_km2']} |")
+    w(f"\nFlood from the USGS water bit alone (water Sep, not Aug): "
+      f"{q['flood_from_usgs_water_bit_km2']} km2; agreement with our flood mask "
+      f"{100 * q['flood_agreement']:.2f} %, kappa {q['flood_cohen_kappa']}.\n")
+    w("Spectral medians of the groups (reflectance):\n")
+    w("| Date | Group | Pixels | Green | Red | NIR | SWIR1 | NDVI | MNDWI | Share with NIR < 0.11 |")
+    w("|---|---|---|---|---|---|---|---|---|---|")
+    for d in ("2014-08-25", "2014-09-10"):
+        for g, x in q[d]["spectra"].items():
+            w(f"| {d} | {g.replace('_', ' ')} | {x['pixels']} | {x['median_green']} "
+              f"| {x['median_red']} | {x['median_nir']} | {x['median_swir1']} "
+              f"| {x['median_ndvi']} | {x['median_mndwi']} | "
+              f"{100 * x['fraction_nir_lt_0.11']:.1f} % |")
+    sp = q["2014-09-10"]["spectra"]
+    w(f"\nReading: every pixel the USGS bit calls water has NIR < 0.11 on both dates. "
+      f"On 2014-09-10 the pixels only we call water have very low SWIR1 (median "
+      f"{sp['ours_only']['median_swir1']}), high MNDWI ({sp['ours_only']['median_mndwi']}) and "
+      f"no vegetation signal (NDVI {sp['ours_only']['median_ndvi']}), but higher red and NIR "
+      f"(median {sp['ours_only']['median_red']} and {sp['ours_only']['median_nir']}) than the "
+      "water both agree on. This is consistent with sediment-laden flood water, which a "
+      "NIR-based water test misses. The disagreement is reported, not used to change the "
+      "result. The USGS bit comes from the same scenes, so this is a check against a "
+      "different algorithm, not against different data.\n")
+
+    w("### Published figures (context only; the result was not adjusted toward them)\n")
+    w("As provided by the project owner; not independently verified here.\n")
+    w("| Source | Figure | Date range | Sensor / method | Difference from this measurement |")
+    w("|---|---|---|---|---|")
+    w("| J&K Department of Environment and Remote Sensing with ISRO, as reported by "
+      "Kashmir Life | 358.6 km2 | 2014-09-10 | not stated in the information recorded "
+      "here | Same date. Sensor, method and area definition not recorded here, so the "
+      "difference cannot be attributed. |")
+    w("| Kumar and Acharya, Natural Hazards, 2016 | about 488 km2 | 2014-09-10 to "
+      "2014-10-12 | Landsat | Covers a month of images rather than one date; same "
+      "sensor family. |")
+    w("| Bhatt et al., Geomatics, Natural Hazards and Risk, 2017 | about 557 km2 | "
+      "2014-09-08 to 2014-09-23 | radar | Covers two weeks rather than one date, and "
+      "radar sees through cloud and records water differently from an optical index. |")
+    w(f"\nThis measurement: one Landsat 8 OLI image, 2014-09-10 about 05:36 UTC, against "
+      f"2014-08-25; optical MNDWI at 30 m; analysis area = valley floor <= 1,800 m "
+      f"connected to Srinagar ({fr['analysis_area_km2']} km2). Area definitions of the "
+      "published figures are not recorded here.\n")
 
 
 if __name__ == "__main__":

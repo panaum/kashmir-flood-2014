@@ -224,13 +224,130 @@ MNDWI computed separately from each row on the mosaic grid; compared where both 
 | 2014-09-10 | all overlap | 2861483 | 0.00569 / 0.00486 | 0.01427 | -0.04804 / 0.06757 | 0.994865 | 0.022 % (636 px) |
 | 2014-09-10 | valley floor overlap | 1481282 | 0.00284 / 0.00327 | 0.01151 | -0.04435 / 0.03683 | 0.998403 | 0.037 % (554 px) |
 
+## Step 3 results: flood extent
+
+Rules: `scripts/step3_rules.md` (sha256 `6035e8e041b8dc4922cb8a8a48f83a9c65151d6b544a38883b7b3dbc39bb035c`), reproduced above. Analysis area: 3696.7941 km2; valid on both dates: 3696.2415 km2.
+
+### Primary result
+
+**Flooded area: 376.6077 km2** (water on 2014-09-10, not water on 2014-08-25, MNDWI threshold 0.127 on both dates).
+
+| Class | km2 |
+|---|---|
+| Flooded | 376.6077 |
+| Persistent water (both dates) | 36.855 |
+| Water lost (Aug water, not Sep) | 0.2358 |
+| Water on 2014-08-25 | 37.0908 |
+| Water on 2014-09-10 | 413.4627 |
+
+Water lost is 0.2358 km2, 0.64 % of the August water.
+
+Rule 4 (SWIR1 <= 0, green > 0 counted as water): 2014-08-25 0.0027 km2; 2014-09-10 0.387 km2; flooded pixels that are water only by rule 4: 0.0846 km2. Saturated (green or SWIR1) in the analysis area: 2014-08-25 0.0 km2; 2014-09-10 0.0 km2.
+
+Files: `data/flood/flood_mask.tif` (1 = flooded, 0 = assessed and not flooded, 255 = outside analysis area or not assessed), `data/flood/flood_classes.tif` (0 = not water either date, 1 = flooded, 2 = persistent, 3 = lost, 255 = outside or not assessed), `data/flood/analysis_area.tif`.
+
+### Sensitivity
+
+| Variant | Threshold Aug / Sep | Flooded km2 | Persistent km2 | Lost km2 |
+|---|---|---|---|---|
+| Primary (rules) | 0.127 / 0.127 | 376.6077 | 36.855 | 0.2358 |
+| (a) each date's own Otsu | -0.058 / 0.127 | 363.9924 | 49.4703 | 1.2006 |
+| (b) 0 on both dates | 0.000 / 0.000 | 423.1881 | 45.0342 | 0.4167 |
+| (c) 0.127 - 0.05 on both | 0.077 / 0.077 | 393.6456 | 39.8286 | 0.2952 |
+| (c) 0.127 + 0.05 on both | 0.177 / 0.177 | 361.5021 | 33.6123 | 0.2088 |
+
+### Not assessed (how far the result is a lower bound)
+
+Analysis-area pixels not valid on at least one date: **0.5526 km2** (0.015 % of the analysis area); invalid on 2014-08-25: 0.0 km2, on 2014-09-10: 0.5526 km2. Reasons (km2, flags overlap):
+
+| Date | no data | dilated cloud | cloud | cloud shadow | snow | saturated green or swir1 | green le0 swir1 le0 | green le0 swir1 gt0 |
+|---|---|---|---|---|---|---|---|---|
+| 2014-08-25 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
+| 2014-09-10 | 0.0 | 0.1746 | 0.1584 | 0.063 | 0.0 | 0.0 | 0.0 | 0.1584 |
+
+This covers only masked pixels inside the analysis area. Flooding outside the analysis area (higher than 1,800 m, or low ground not connected to Srinagar) and flooding under unflagged cloud (section U) is not counted.
+
+### U. Unflagged clouds on 2014-09-10 (estimate; masks not changed)
+
+Method as fixed in rules U1-U5. Sun azimuth 142.82 deg, elevation 54.82 deg (2014-09-10 row 036 MTL). Valid analysis area on 2014-09-10: 3696.2415 km2.
+
+| Estimate | km2 | Flooded km2 inside |
+|---|---|---|
+| U1 QA_PIXEL medium-confidence cloud, not flagged | 0.2691 | 0.0018 |
+| U2 bright-and-white test | 1.3689 (0.037 % of valid) | 0.0 |
+| U3 shadow zone of U2 (upper bound) | 17.8065 | 0.3006 |
+| U3 dark part of the zone | 1.9494 | 0.2736 |
+
+U4 control: the U2 test fires on 0.3897 km2 (0.011 %) of the 3696.7941 km2 flagged clear on 2014-08-25. The test is rough: it uses no blue or thermal band, and the shadow zone assumes cloud heights of 500 to 5,000 m.
+
+### OpenStreetMap water bodies and wetlands
+
+Downloaded 2026-10-02T16:19:34+00:00 from https://overpass-api.de/api/interpreter (OSM data as of 2026-10-02T16:20:02Z); response sha256 `47c516ef80530716fe1de73a42fa24e798e29a7086d1c0d0fd03479c53674ddf`, 580 elements, saved as `data/osm/overpass_response.json`. OpenStreetMap data, Open Database License (ODbL); attribution: (c) OpenStreetMap contributors.
+
+| Tag | Ways | Relations | Polygons built |
+|---|---|---|---|
+| natural=water | 523 | 25 | 548 |
+| natural=wetland | 25 | 4 | 29 |
+| landuse=reservoir | 3 | 0 | 3 |
+
+Polygons cover 242.2026 km2 of the analysis area.
+
+| | Inside OSM water/wetland | Outside |
+|---|---|---|
+| Flooded km2 | 119.1465 | 257.4612 |
+| Persistent water km2 | 35.1747 | 1.6803 |
+
+OSM polygons are a present-day map. Flooded area inside them is lake or wetland surface (as mapped today) that was not water by MNDWI on 2014-08-25, for example the vegetated Wular box (section 7).
+
+### Srinagar box
+
+Box lon 74.65-74.95, lat 33.95-34.20 (855624 pixels; analysis area in the box 661.2651 km2): **flooded 161.3457 km2**, persistent water 12.7557 km2, not assessed 0.045 km2.
+
+### Independent check: QA_PIXEL water bit (bit 7)
+
+Our water (threshold 0.127, rule 4 included) against the USGS water bit, on valid analysis-area pixels.
+
+| Date | Agreement | Cohen's kappa | Ours water km2 | USGS water km2 | Both | Ours only | USGS only |
+|---|---|---|---|---|---|---|---|
+| 2014-08-25 | 99.68 % | 0.811 | 37.0908 | 26.3439 | 25.7715 | 11.3193 | 0.5724 |
+| 2014-09-10 | 93.04 % | 0.5216 | 413.4627 | 160.506 | 158.2695 | 255.1932 | 2.2365 |
+
+Flood from the USGS water bit alone (water Sep, not Aug): 148.8348 km2; agreement with our flood mask 93.40 %, kappa 0.5071.
+
+Spectral medians of the groups (reflectance):
+
+| Date | Group | Pixels | Green | Red | NIR | SWIR1 | NDVI | MNDWI | Share with NIR < 0.11 |
+|---|---|---|---|---|---|---|---|---|---|
+| 2014-08-25 | both | 28635 | 0.0577 | 0.0435 | 0.034 | 0.0158 | -0.0877 | 0.5091 | 100.0 % |
+| 2014-08-25 | ours only | 12577 | 0.0467 | 0.0329 | 0.065 | 0.0269 | 0.3404 | 0.2337 | 93.5 % |
+| 2014-08-25 | usgs only | 636 | 0.0724 | 0.0673 | 0.0716 | 0.0644 | 0.0378 | 0.0709 | 100.0 % |
+| 2014-09-10 | both | 175855 | 0.1119 | 0.123 | 0.0637 | 0.0078 | -0.3196 | 0.8572 | 100.0 % |
+| 2014-09-10 | ours only | 283548 | 0.1215 | 0.1455 | 0.1287 | 0.0214 | -0.0563 | 0.6794 | 18.7 % |
+| 2014-09-10 | usgs only | 2485 | 0.0918 | 0.0951 | 0.0904 | 0.0845 | -0.0265 | 0.059 | 100.0 % |
+
+Reading: every pixel the USGS bit calls water has NIR < 0.11 on both dates. On 2014-09-10 the pixels only we call water have very low SWIR1 (median 0.0214), high MNDWI (0.6794) and no vegetation signal (NDVI -0.0563), but higher red and NIR (median 0.1455 and 0.1287) than the water both agree on. This is consistent with sediment-laden flood water, which a NIR-based water test misses. The disagreement is reported, not used to change the result. The USGS bit comes from the same scenes, so this is a check against a different algorithm, not against different data.
+
+### Published figures (context only; the result was not adjusted toward them)
+
+As provided by the project owner; not independently verified here.
+
+| Source | Figure | Date range | Sensor / method | Difference from this measurement |
+|---|---|---|---|---|
+| J&K Department of Environment and Remote Sensing with ISRO, as reported by Kashmir Life | 358.6 km2 | 2014-09-10 | not stated in the information recorded here | Same date. Sensor, method and area definition not recorded here, so the difference cannot be attributed. |
+| Kumar and Acharya, Natural Hazards, 2016 | about 488 km2 | 2014-09-10 to 2014-10-12 | Landsat | Covers a month of images rather than one date; same sensor family. |
+| Bhatt et al., Geomatics, Natural Hazards and Risk, 2017 | about 557 km2 | 2014-09-08 to 2014-09-23 | radar | Covers two weeks rather than one date, and radar sees through cloud and records water differently from an optical index. |
+
+This measurement: one Landsat 8 OLI image, 2014-09-10 about 05:36 UTC, against 2014-08-25; optical MNDWI at 30 m; analysis area = valley floor <= 1,800 m connected to Srinagar (3696.7941 km2). Area definitions of the published figures are not recorded here.
+
 ## Limitations noted
 
-- Radiometric saturation is not screened. The MTL files report saturation present (Y/N) in green (band 3) / SWIR1 (band 6) as: `LC08_L2SP_149036_20140825_02_T1` Y/N; `LC08_L2SP_149037_20140825_02_T1` N/Y; `LC08_L2SP_149036_20140910_02_T1` Y/N; `LC08_L2SP_149037_20140910_02_T1` Y/N. The QA_RADSAT band, which marks saturated pixels, was not downloaded.
-- QA_PIXEL misses some small clouds. Visual observation, not measured: on 2014-09-10 small white clouds next to the Srinagar airport box (`previews/water_sanity_sites.png`) are mostly not flagged. Unflagged cloud is counted as valid, not-water, and hides what is beneath it.
+- Saturation: the MTL files report saturation present (Y/N) in green (band 3) / SWIR1 (band 6) as: `LC08_L2SP_149036_20140825_02_T1` Y/N; `LC08_L2SP_149037_20140825_02_T1` N/Y; `LC08_L2SP_149036_20140910_02_T1` Y/N; `LC08_L2SP_149037_20140910_02_T1` Y/N. QA_RADSAT was downloaded in step 3; it marks no green or SWIR1 saturation inside the clip box on either date (2014-08-25: 0 green / 0 SWIR1 pixels, 2014-09-10: 0 green / 0 SWIR1 pixels). The step 2 water masks were made before QA_RADSAT was available; with no saturated pixels in the clip box they are unaffected.
+- QA_PIXEL misses some small clouds (visible near the Srinagar airport box on 2014-09-10, `previews/water_sanity_sites.png`). Unflagged cloud is counted as valid, not-water, and hides what is beneath it. Estimated in step 3, section U.
 - The DEM is a surface model and its vertical datum is not stated in the files.
-- The 2014-08-25 Otsu threshold is not well supported by its histogram (section 5).
+- The 2014-08-25 Otsu threshold is not well supported by its histogram (section 5); step 3 uses the 2014-09-10 threshold on both dates.
 - Row 036 / 037 reflectance offsets (DATA.md) remain in the mosaic; their effect on the water class is in section 8.
+- Water covered by vegetation (e.g. the Wular box on 2014-08-25) is not detected as water by MNDWI. Such areas that are open water on 2014-09-10 count as flooded.
+- OpenStreetMap polygons are current (downloaded 2026-10-02T16:19:34+00:00), not a 2014 map.
 - Mosaic grid and clip box as in DATA.md (bbox [74.2, 33.5, 75.4, 34.6]).
 
 ## Previews (`previews/`)
@@ -240,5 +357,7 @@ MNDWI computed separately from each row on the mosaic grid; compared where both 
 - `previews/water_srinagar_side_by_side.png`
 - `previews/water_valley_side_by_side.png`
 - `previews/water_sanity_sites.png`
+- `previews/flood_srinagar.png`
+- `previews/flood_valley.png`
 
-Overlay colours: cyan = water, magenta = masked, darkened = above 1800 m. Base image and stretch as in DATA.md.
+Water overlays: cyan = water, magenta = masked, darkened = above 1800 m. Flood overlays: red = flooded, blue = persistent water, yellow = water lost, magenta = not assessed, darkened = outside the analysis area. Base image and stretch as in DATA.md.
