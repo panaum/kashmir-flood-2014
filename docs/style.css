@@ -1,6 +1,5 @@
 /* The Kashmir Flood, September 2014 — exhibit-style page.
-   Colour: chinar rust, saffron, walnut, Dal blue-green on off-white.
-   Structure: Bodoni-style headings, 12-column grid, generous space.
+   Black type on white; Bodoni-style headings, 12-column grid, generous space.
    Map colours are set from data/layers.json (Okabe-Ito, colour-blind safe). */
 
 @font-face {
@@ -10,24 +9,16 @@
   font-style: normal;
   font-display: swap;
 }
-@font-face {
-  font-family: "Bodoni Moda";
-  src: url("fonts/BodoniModa-Italic-latin.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
 
 :root {
-  --paper: #F6F1E7;
-  --paper-2: #EFE7D8;
-  --ink: #2A1C13;          /* walnut, darkest: body text */
-  --walnut: #5A3B27;
-  --muted: #5E4B3E;
-  --chinar: #8F3416;       /* rust: headings accents, links */
-  --saffron: #D99A1E;      /* decorative only, never text */
-  --dal: #22625E;          /* Dal Lake blue-green */
-  --rule: #D8CCB8;
+  --paper: #FFFFFF;
+  --paper-2: #F3F3F3;
+  --ink: #000000;
+  --walnut: #000000;
+  --muted: #3D3D3D;
+  --chinar: #000000;
+  --dal: #000000;
+  --rule: #D6D6D6;
   --serif: "Bodoni Moda", "Didot", "Bodoni 72", "Times New Roman", serif;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --gap: 2rem;
@@ -47,7 +38,7 @@ body {
 }
 img { max-width: 100%; height: auto; display: block; }
 a { color: var(--chinar); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
-a:hover { color: var(--dal); }
+a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 3px solid var(--dal); outline-offset: 3px; }
 
 .skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: var(--paper); padding: .5rem 1rem; z-index: 2000; }
@@ -77,7 +68,7 @@ p { margin: 0 0 1rem; }
 /* Masthead */
 .masthead { padding: 4.5rem 1.5rem 3rem; }
 .kicker { grid-column: 1 / -1; font-variant: small-caps; letter-spacing: .12em; color: var(--chinar); margin-bottom: 1.25rem; }
-.dek { grid-column: 1 / span 7; font-family: var(--serif); font-style: italic; font-size: 1.35rem; line-height: 1.45; color: var(--walnut); margin-top: 1.5rem; }
+.dek { grid-column: 1 / span 7; font-size: 1.25rem; line-height: 1.5; color: var(--ink); margin-top: 1.5rem; }
 
 section { padding: 1rem 0 1.5rem; }
 
@@ -87,10 +78,10 @@ hr.khatam {
   height: 14px;
   max-width: 76rem;
   margin: 3.5rem auto;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='14' viewBox='0 0 44 14'%3E%3Cg fill='none' stroke='%238F3416' stroke-width='0.9'%3E%3Cpath d='M0 7h15M29 7h15'/%3E%3Cpath d='M22 1l6 6-6 6-6-6z'/%3E%3Cpath d='M17.8 2.8h8.4v8.4h-8.4z'/%3E%3C/g%3E%3Ccircle cx='22' cy='7' r='1.1' fill='%23D99A1E'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='14' viewBox='0 0 44 14'%3E%3Cg fill='none' stroke='%23000000' stroke-width='0.9'%3E%3Cpath d='M0 7h15M29 7h15'/%3E%3Cpath d='M22 1l6 6-6 6-6-6z'/%3E%3Cpath d='M17.8 2.8h8.4v8.4h-8.4z'/%3E%3C/g%3E%3Ccircle cx='22' cy='7' r='1.1' fill='%23000000'/%3E%3C/svg%3E");
   background-repeat: repeat-x;
   background-position: center;
-  opacity: .8;
+  opacity: .55;
 }
 
 /* Map */
@@ -120,14 +111,14 @@ hr.khatam {
 .legend-title { font-size: 1.1rem; border-top: 1px solid var(--rule); padding-top: .75rem; }
 .legend { list-style: none; padding: 0; margin: 0 0 1rem; }
 .legend li { display: flex; gap: .6rem; align-items: flex-start; margin-bottom: .45rem; line-height: 1.35; }
-.sw { flex: 0 0 1.1rem; height: 1.1rem; border: 1px solid rgba(42, 28, 19, .45); margin-top: .1rem; }
+.sw { flex: 0 0 1.1rem; height: 1.1rem; border: 1px solid rgba(0, 0, 0, .45); margin-top: .1rem; }
 .sw-flooded { background: var(--c-flooded); }
 .sw-persistent { background: var(--c-persistent); }
 .sw-lost { background: var(--c-lost); }
 .sw-na { background: var(--c-na); }
 .sw-outline { background: transparent; border: 2px dashed var(--ink); }
 .leaflet-container { font: .85rem var(--sans); background: var(--paper-2); }
-.leaflet-control-attribution { background: rgba(246, 241, 231, .9) !important; color: var(--ink); }
+.leaflet-control-attribution { background: rgba(255, 255, 255, .9) !important; color: var(--ink); }
 .leaflet-control-attribution a { color: var(--chinar); }
 
 /* Before / after */
@@ -135,7 +126,7 @@ hr.khatam {
 .ba-frame { position: relative; overflow: hidden; border: 1px solid var(--rule); background: var(--paper-2); --pos: 50%; }
 .ba-after { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
 .ba-after img { width: 100%; }
-.ba-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--paper); box-shadow: 0 0 0 1px rgba(42, 28, 19, .5); pointer-events: none; }
+.ba-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--paper); box-shadow: 0 0 0 1px rgba(0, 0, 0, .5); pointer-events: none; }
 .ba-label { display: block; margin: 1rem 0 .3rem; font-size: .95rem; }
 #ba-range { width: 100%; accent-color: var(--chinar); }
 .ba figcaption { color: var(--muted); font-size: .95rem; margin-top: .6rem; }
@@ -169,7 +160,7 @@ td:nth-child(2) { white-space: nowrap; font-variant-numeric: lining-nums; }
 .plain, .credits { list-style: none; padding: 0; margin: 0 0 1.5rem; }
 .plain li, .credits li { margin-bottom: .7rem; }
 .credits li { font-size: .95rem; }
-.credit-line { font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--walnut); border-top: 1px solid var(--rule); padding-top: 1.25rem; margin-top: 1rem; }
+.credit-line { font-size: 1rem; color: var(--ink); border-top: 1px solid var(--rule); padding-top: 1.25rem; margin-top: 1rem; }
 
 footer { padding: 2rem 1.5rem 4rem; color: var(--muted); font-size: .9rem; }
 
@@ -196,3 +187,6 @@ footer { padding: 2rem 1.5rem 4rem; color: var(--muted); font-size: .9rem; }
 
 /* Keep class edges crisp when zoomed in. */
 .flood-overlay { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+/* Row headings in the published-figures table read like the other cells. */
+tbody th { font-family: var(--sans); font-size: .95rem; font-weight: 600; border-bottom-color: var(--rule); }

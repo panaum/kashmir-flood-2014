@@ -81,8 +81,8 @@
     flood.addTo(map);
 
     fetch(layers.layers.outline.file).then(function (r) { return r.json(); }).then(function (gj) {
-      L.geoJSON(gj, { interactive: false, style: { color: "#F6F1E7", weight: 3.5, opacity: 0.8, fill: false } }).addTo(map);
-      L.geoJSON(gj, { interactive: false, style: { color: "#2A1C13", weight: 1.5, dashArray: "5 4", fill: false } }).addTo(map);
+      L.geoJSON(gj, { interactive: false, style: { color: "#FFFFFF", weight: 3.5, opacity: 0.8, fill: false } }).addTo(map);
+      L.geoJSON(gj, { interactive: false, style: { color: "#000000", weight: 1.5, dashArray: "5 4", fill: false } }).addTo(map);
     });
 
     map.fitBounds(views.srinagar);
