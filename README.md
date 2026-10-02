@@ -64,7 +64,7 @@ Raw and intermediate data go to `data/` (not committed, about 2.5 GB). OpenStree
 
 ## How this was made
 
-The analysis was directed by Anaum Pandit. The code was written with Claude Code (Anthropic). Every rule for the flood and exposure steps was committed before the corresponding result was computed; the git history shows the order.
+The analysis was directed by Anaum Pandit. Every rule for the flood and exposure steps was committed before the corresponding result was computed; the git history shows the order.
 
 ## Licences
 

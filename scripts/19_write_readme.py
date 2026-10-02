@@ -90,7 +90,7 @@ def main():
     w("- See METHODS.md for every limitation and check.\n")
 
     w("## How this was made\n")
-    w("The analysis was directed by Anaum Pandit. The code was written with Claude Code (Anthropic). "
+    w("The analysis was directed by Anaum Pandit. "
       "Every rule for the flood and exposure steps was committed before the corresponding result was "
       "computed; the git history shows the order.\n")
 
