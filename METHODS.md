@@ -622,6 +622,118 @@ On a 2 km grid over the analysis area (1161 cells; 1048 with at least 2 km of mo
 
 Files (not committed): `data/exposure/buildings.csv` (one row per building with its centroid and state under both rules), `data/exposure/roads.csv` (metres dry / flooded / not assessed per way).
 
+## Step 4b results: Microsoft building footprints on flooded ground
+
+Rules: `scripts/step4b_rules.md` (sha256 `f533cf61d4a400af4d07ab9cb830244f47897f50d75ccba7881bca9796ae23f7`), reproduced above.
+
+**All figures in this section are building footprints in Microsoft's footprint data (imagery 2017-03-30 to 2021-07-25 per the catalogue) standing on ground that was flooded on 2014-09-10. They are not counts of buildings flooded in 2014.** The OpenStreetMap counts in step 4 are unchanged.
+
+### Source
+
+- https://planetarycomputer.microsoft.com/api/stac/v1, collection `ms-buildings` (Microsoft Building Footprints), licence ODbL-1.0.
+- Dataset version (processing date): **2023-04-25**; Delta table `footprints/delta/2023-04-25/ml-buildings.parquet`; transaction log: 1 file(s), 1 commit(s) replayed, checkpoint none.
+- Imagery dates given by the catalogue for every item: start 2017-03-30, end 2021-07-25. No per-building dates are provided.
+- Downloaded 2026-10-02T17:20:08+00:00 to 2026-10-02T17:21:30+00:00. TLS verified with the certifi 2026.7.22 certificate bundle.
+
+| Item | Quadkey | Files | Bytes | Server MD5 checked | Rows | Files in folder not in log | In log not in folder |
+|---|---|---|---|---|---|---|---|
+| `India_123103023_2023-04-25` | 123103023 | 1 | 17411673 | 0 | 235880 | 0 | 0 |
+| `India_123103032_2023-04-25` | 123103032 | 1 | 4288310 | 0 | 55897 | 0 | 0 |
+| `India_123103033_2023-04-25` | 123103033 | 1 | 428442 | 0 | 5383 | 0 | 0 |
+| `India_123103201_2023-04-25` | 123103201 | 1 | 27192985 | 0 | 353613 | 0 | 0 |
+| `India_123103203_2023-04-25` | 123103203 | 1 | 31130434 | 0 | 361129 | 0 | 0 |
+| `India_123103210_2023-04-25` | 123103210 | 1 | 68177417 | 0 | 864473 | 0 | 0 |
+| `India_123103211_2023-04-25` | 123103211 | 1 | 3167675 | 0 | 42126 | 0 | 0 |
+| `India_123103212_2023-04-25` | 123103212 | 1 | 20152700 | 0 | 265117 | 0 | 0 |
+| `India_123103213_2023-04-25` | 123103213 | 1 | 9866949 | 0 | 129040 | 0 | 0 |
+
+Files were checked against the server's size; the server sent no Content-MD5, so each file's sha256 was computed locally (in `data/msbuildings/record.json`) and its row count checked against the Delta log. Rows read: 2312658; byte-identical duplicates removed: 0; unparseable or empty: 0. Coordinate system declared in the files: WGS 84 (EPSG:4326). Footprints near the clip box: 1580999. Footprint area in the analysis area: median 83.9 m2, 10th-90th percentile 21.5-199.9 m2.
+
+### Footprints on flooded ground
+
+| Area | On flooded ground | Total footprints | Share | Not assessed | Not flooded |
+|---|---|---|---|---|---|
+| Analysis area, centroid rule | **42016** | 1185245 | 3.5 % | 13 | 1143216 |
+| Srinagar box, centroid rule | **37611** | 337257 | 11.2 % | 8 | 299638 |
+| Analysis area, any-overlap rule | **55950** | 1186292 | 4.7 % | 23 | 1130319 |
+| Srinagar box, any-overlap rule | **49932** | 337336 | 14.8 % | 15 | 287389 |
+| Inside step 3 water/wetland polygons | **1603** | 6749 | 23.8 % | 1 | 5145 |
+| Outside step 3 water/wetland polygons | **40413** | 1178496 | 3.4 % | 12 | 1138071 |
+| Srinagar box, inside water/wetland | **1395** | 5227 | 26.7 % | 0 | 3832 |
+| Srinagar box, outside water/wetland | **36216** | 332030 | 10.9 % | 8 | 295806 |
+
+### Srinagar 1 km grid
+
+841 cells (1 km UTM cells clipped to the Srinagar box); footprints on flooded ground in the grid: 37611 of 337257. Motor roads from the step 4 OSM extract. Labels are the nearest named OSM suburb, neighbourhood or quarter to the cell centre; the distance shows how loose a label is.
+
+**Top ten by footprints on flooded ground**
+
+| Cell lower-left (UTM 43N, m) | Nearest place | Distance (m) | Footprints on flooded ground | Footprints | Flooded motor road km | Motor road km | Flooded share |
+|---|---|---|---|---|---|---|---|
+| 483000, 3768000 | Amira kadal | 770 | 1157 | 1743 | 13.20 | 19.01 | 69.4 % |
+| 483000, 3766000 | Natipora | 832 | 905 | 2064 | 10.18 | 18.62 | 54.7 % |
+| 478000, 3772000 | Qamarwari | 206 | 864 | 1393 | 16.89 | 20.43 | 82.7 % |
+| 480000, 3769000 | Batamaloo | 450 | 852 | 2434 | 10.95 | 20.89 | 52.4 % |
+| 479000, 3770000 | Bemina | 903 | 830 | 1586 | 13.26 | 20.36 | 65.1 % |
+| 483000, 3767000 | Natipora | 542 | 782 | 1173 | 10.00 | 12.71 | 78.7 % |
+| 483000, 3769000 | Rajbagh | 620 | 767 | 1243 | 12.96 | 16.58 | 78.1 % |
+| 477000, 3769000 | Bemina | 1595 | 734 | 1426 | 9.15 | 16.38 | 55.9 % |
+| 475000, 3774000 | Qamarwari | 3466 | 684 | 1541 | 11.97 | 19.77 | 60.5 % |
+| 484000, 3769000 | Rajbagh | 381 | 680 | 1413 | 7.43 | 14.67 | 50.6 % |
+
+**Top ten by flooded motor-road length**
+
+| Cell lower-left (UTM 43N, m) | Nearest place | Distance (m) | Footprints on flooded ground | Footprints | Flooded motor road km | Motor road km | Flooded share |
+|---|---|---|---|---|---|---|---|
+| 478000, 3771000 | Bemina | 861 | 457 | 1294 | 19.12 | 31.16 | 61.4 % |
+| 476000, 3769000 | Bemina | 2401 | 443 | 453 | 17.60 | 17.77 | 99.1 % |
+| 478000, 3772000 | Qamarwari | 206 | 864 | 1393 | 16.89 | 20.43 | 82.7 % |
+| 478000, 3770000 | Bemina | 182 | 452 | 1129 | 15.28 | 24.21 | 63.1 % |
+| 479000, 3771000 | Bemina | 1234 | 630 | 995 | 14.67 | 17.55 | 83.6 % |
+| 478000, 3773000 | Qamarwari | 799 | 663 | 1385 | 13.61 | 19.32 | 70.5 % |
+| 479000, 3770000 | Bemina | 903 | 830 | 1586 | 13.26 | 20.36 | 65.1 % |
+| 483000, 3768000 | Amira kadal | 770 | 1157 | 1743 | 13.20 | 19.01 | 69.4 % |
+| 483000, 3769000 | Rajbagh | 620 | 767 | 1243 | 12.96 | 16.58 | 78.1 % |
+| 479000, 3769000 | Tengpora | 1119 | 603 | 1249 | 12.93 | 18.27 | 70.8 % |
+
+**Top ten by flooded share of motor road** (cells with at least 1 km)
+
+| Cell lower-left (UTM 43N, m) | Nearest place | Distance (m) | Footprints on flooded ground | Footprints | Flooded motor road km | Motor road km | Flooded share |
+|---|---|---|---|---|---|---|---|
+| 470000, 3776000 | Trison City | 782 | 61 | 64 | 2.28 | 2.28 | 100.0 % |
+| 469000, 3778000 | Trison City | 3000 | 9 | 9 | 1.41 | 1.41 | 100.0 % |
+| 471000, 3778000 | Trison City | 2888 | 18 | 19 | 1.38 | 1.38 | 100.0 % |
+| 478000, 3768000 | Tengpora | 1909 | 40 | 40 | 1.00 | 1.00 | 100.0 % |
+| 476000, 3769000 | Bemina | 2401 | 443 | 453 | 17.60 | 17.77 | 99.1 % |
+| 473000, 3775000 | Trison City | 2845 | 126 | 129 | 5.66 | 5.77 | 98.1 % |
+| 470000, 3778000 | Trison City | 2769 | 7 | 9 | 1.71 | 1.78 | 96.6 % |
+| 489000, 3765000 | Sempora Srinagar | 1395 | 400 | 503 | 6.97 | 7.34 | 95.0 % |
+| 469000, 3779000 | Trison City | 3941 | 11 | 12 | 1.05 | 1.11 | 94.7 % |
+| 474000, 3775000 | Trison City | 3842 | 191 | 250 | 5.63 | 6.15 | 91.6 % |
+
+### Cross-check with OpenStreetMap
+
+In the ten 1 km cells where OSM has the most buildings: 1415 OSM buildings, of which 1407 polygons (8 nodes skipped). Match rule: intersection >= 50% of the OSM polygon or of the footprint. **Matched: 1007 (71.6 %)**; touched by any footprint: 1347 (95.7 %). Microsoft footprints in the same cells: 15206.
+
+| Cell lower-left | Nearest place | OSM buildings | OSM polygons | Matched | Touched | Microsoft footprints |
+|---|---|---|---|---|---|---|
+| 482000, 3776000 | Mandibal | 306 | 306 | 188 | 286 | 2051 |
+| 489000, 3775000 | Nishat | 236 | 236 | 126 | 227 | 974 |
+| 481000, 3771000 | Karan Nagar | 228 | 222 | 163 | 216 | 2323 |
+| 482000, 3777000 | Awanta Bhawan | 106 | 106 | 71 | 102 | 2066 |
+| 483000, 3770000 | Kothi Bagh | 103 | 102 | 89 | 95 | 405 |
+| 482000, 3769000 | Lal Mandi | 94 | 94 | 83 | 93 | 1171 |
+| 482000, 3770000 | Gawkadal | 92 | 92 | 81 | 91 | 2006 |
+| 481000, 3777000 | Soura | 87 | 87 | 67 | 83 | 1481 |
+| 485000, 3776000 | Hazratbal | 82 | 82 | 70 | 78 | 436 |
+| 482000, 3773000 | Gojwara | 81 | 80 | 69 | 76 | 2293 |
+
+Why some touched OSM buildings are not matched was not examined. Possible causes include outlines that differ in size or position, or one OSM outline covering several footprints.
+
+### Completeness (same test as step 4)
+
+2 km cells over the analysis area with at least 2 km of motor road: 1048. Cells with roads but no footprint: **23** (step 4 OSM: see above), holding 0.0279 km2 of the flooded area. Footprints per km of motor road, 10th/25th/50th/75th/90th percentile: 31.09 / 67.47 / 106.5 / 148.09 / 188.41; Srinagar box cells: 39.43 / 59.38 / 76.99 / 110.29 / 142.74; other cells: 26.09 / 71.18 / 114.18 / 153.14 / 196.69. Cells under one footprint per km: 36. By this test the footprint data are far more complete than OSM buildings; the test cannot show buildings the model missed or merged.
+
 ## Limitations noted
 
 - Saturation: the MTL files report saturation present (Y/N) in green (band 3) / SWIR1 (band 6) as: `LC08_L2SP_149036_20140825_02_T1` Y/N; `LC08_L2SP_149037_20140825_02_T1` N/Y; `LC08_L2SP_149036_20140910_02_T1` Y/N; `LC08_L2SP_149037_20140910_02_T1` Y/N. QA_RADSAT was downloaded in step 3; it marks no green or SWIR1 saturation inside the clip box on either date (2014-08-25: 0 green / 0 SWIR1 pixels, 2014-09-10: 0 green / 0 SWIR1 pixels). The step 2 water masks were made before QA_RADSAT was available; with no saturated pixels in the clip box they are unaffected.
@@ -632,6 +744,7 @@ Files (not committed): `data/exposure/buildings.csv` (one row per building with 
 - Water covered by vegetation (e.g. the Wular box on 2014-08-25) is not detected as water by MNDWI. Such areas that are open water on 2014-09-10 count as flooded.
 - OpenStreetMap polygons are current (downloaded 2026-10-02T16:19:34+00:00), not a 2014 map.
 - Building and road counts use today's OpenStreetMap, not 2014's, and OSM building coverage in the analysis area is patchy (step 4, completeness). Building counts are counts of mapped buildings only.
+- Microsoft footprints (step 4b) come from imagery of 2017-2021 per the catalogue; they are footprints standing on ground flooded on 2014-09-10, not buildings flooded in 2014. Dense built-up blocks often appear as unflooded patches inside flooded ground; whether this is higher ground or a limit of a 30 m optical index over roofs was not tested.
 - Mosaic grid and clip box as in DATA.md (bbox [74.2, 33.5, 75.4, 34.6]).
 
 ## Previews (`previews/`)
@@ -644,5 +757,6 @@ Files (not committed): `data/exposure/buildings.csv` (one row per building with 
 - `previews/flood_srinagar.png`
 - `previews/flood_valley.png`
 - `previews/exposure_srinagar.png`
+- `previews/msbuildings_srinagar.png`
 
 Water overlays: cyan = water, magenta = masked, darkened = above 1800 m. Flood overlays: red = flooded, blue = persistent water, yellow = water lost, magenta = not assessed, darkened = outside the analysis area. Base image and stretch as in DATA.md.

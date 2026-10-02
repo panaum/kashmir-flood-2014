@@ -82,9 +82,8 @@ def pixel_index(transform, xs, ys, shape_):
     return rows, cols, inside
 
 
-def main():
-    EXPO_DIR.mkdir(parents=True, exist_ok=True)
-    manifest, elements = load_elements()
+def state_rasters():
+    """Pixel state and the combined code raster (state + 4*water/wetland + 8*Srinagar)."""
     with rasterio.open(ROOT / "data" / "flood" / "flood_classes.tif") as src:
         cls = src.read(1)
         transform, crs, shp = src.transform, src.crs, (src.height, src.width)
@@ -100,8 +99,11 @@ def main():
     srin = np.zeros(shp, bool)
     srin[win.toslices()] = True
     code = state + 4 * osm_wet.astype(np.uint8) + 8 * srin.astype(np.uint8)
+    return state, code, transform, crs, shp, sb, win
 
-    # ---- Build geometries (B2, R1)
+
+def osm_geometries(elements):
+    """Building geometries (B2) and road lines (R1) from OSM elements."""
     b_els, b_geoms, unbuilt_b = [], [], Counter()
     r_els, r_geoms, area_ways = [], [], Counter()
     for el in elements:
@@ -124,11 +126,11 @@ def main():
             if len(c) >= 2:
                 r_els.append(el)
                 r_geoms.append(shapely.LineString(c))
-    print(f"{len(b_geoms)} buildings, {len(r_geoms)} road ways")
-    b_utm = to_utm(b_geoms, crs)
-    r_utm = to_utm(r_geoms, crs)
+    return b_els, b_geoms, unbuilt_b, r_els, r_geoms, area_ways
 
-    # ---- Buildings: centroid rule (B3)
+
+def classify_buildings(b_utm, code, state, transform, shp):
+    """Centroid rule (B3) and any-overlap rule (B4) for projected buildings."""
     cent = shapely.centroid(b_utm)
     cx, cy = shapely.get_x(cent), shapely.get_y(cent)
     rr, cc, ok = pixel_index(transform, cx, cy, shp)
@@ -136,7 +138,6 @@ def main():
     b_code[ok] = code[rr[ok], cc[ok]]
     b_state = b_code & 3
 
-    # ---- Buildings: overlap rule (B4)
     ov_state = np.full(len(b_utm), OUTSIDE, dtype=np.uint8)
     for i, g in enumerate(b_utm):
         if g.geom_type == "Point":
@@ -159,11 +160,24 @@ def main():
             ov_state[i] = NOT_ASSESSED
         elif (st == DRY).any():
             ov_state[i] = DRY
+    return cent, cx, cy, b_code, b_state, ov_state
 
-    def bcount(mask_codes, states):
-        out = {STATE_NAMES[s]: int(np.sum(mask_codes & (states == s))) for s in (DRY, FLOODED, NOT_ASSESSED)}
-        out["total_in_analysis_area"] = sum(out.values())
-        return out
+
+def bcount(mask_codes, states):
+    out = {STATE_NAMES[s]: int(np.sum(mask_codes & (states == s))) for s in (DRY, FLOODED, NOT_ASSESSED)}
+    out["total_in_analysis_area"] = sum(out.values())
+    return out
+
+
+def main():
+    EXPO_DIR.mkdir(parents=True, exist_ok=True)
+    manifest, elements = load_elements()
+    state, code, transform, crs, shp, sb, win = state_rasters()
+    b_els, b_geoms, unbuilt_b, r_els, r_geoms, area_ways = osm_geometries(elements)
+    print(f"{len(b_geoms)} buildings, {len(r_geoms)} road ways")
+    b_utm = to_utm(b_geoms, crs)
+    r_utm = to_utm(r_geoms, crs)
+    cent, cx, cy, b_code, b_state, ov_state = classify_buildings(b_utm, code, state, transform, shp)
 
     in_osm = (b_code & 4) > 0
     in_srin = (b_code & 8) > 0

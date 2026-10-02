@@ -244,6 +244,8 @@ def main():
     step3(w, fr, rs, osm)
     ex = json.loads((ROOT / "data" / "exposure_report.json").read_text())
     step4(w, ex)
+    mr = json.loads((ROOT / "data" / "msbuildings_report.json").read_text())
+    step4b(w, mr)
 
     # ---- Limitations
     w("## Limitations noted\n")
@@ -275,13 +277,17 @@ def main():
     w("- Building and road counts use today's OpenStreetMap, not 2014's, and OSM building "
       "coverage in the analysis area is patchy (step 4, completeness). Building counts are "
       "counts of mapped buildings only.")
+    w("- Microsoft footprints (step 4b) come from imagery of 2017-2021 per the catalogue; they "
+      "are footprints standing on ground flooded on 2014-09-10, not buildings flooded in 2014. "
+      "Dense built-up blocks often appear as unflooded patches inside flooded ground; whether "
+      "this is higher ground or a limit of a 30 m optical index over roofs was not tested.")
     w(f"- Mosaic grid and clip box as in DATA.md (bbox {mosaic['bbox_wgs84']}).\n")
 
     w("## Previews (`previews/`)\n")
     for p in ("mndwi_histogram_2014-08-25.png", "mndwi_histogram_2014-09-10.png",
               "water_srinagar_side_by_side.png", "water_valley_side_by_side.png",
               "water_sanity_sites.png", "flood_srinagar.png", "flood_valley.png",
-              "exposure_srinagar.png"):
+              "exposure_srinagar.png", "msbuildings_srinagar.png"):
         w(f"- `previews/{p}`")
     w("\nWater overlays: cyan = water, magenta = masked, darkened = above "
       f"{wr['valley_floor_max_m']:g} m. Flood overlays: red = flooded, blue = persistent "
@@ -587,6 +593,116 @@ def step4(w, ex):
     w("Files (not committed): `data/exposure/buildings.csv` (one row per building with its "
       "centroid and state under both rules), `data/exposure/roads.csv` (metres dry / flooded / "
       "not assessed per way).\n")
+
+
+def step4b(w, mr):
+    """Step 4b results, all read from data/msbuildings_report.json."""
+    src, ld, c, o = mr["source"], mr["load"], mr["counts"]["centroid"], mr["counts"]["overlap"]
+    g, x, co = mr["grid"], mr["cross_check"], mr["completeness"]
+    starts = sorted({i["start_datetime"] for i in mr["items"]})
+    ends = sorted({i["end_datetime"] for i in mr["items"]})
+    w("## Step 4b results: Microsoft building footprints on flooded ground\n")
+    w(f"Rules: `{mr['rules_file']}` (sha256 `{mr['rules_sha256']}`), reproduced above.\n")
+    w(f"**All figures in this section are building footprints in Microsoft's footprint data "
+      f"(imagery {starts[0][:10]} to {ends[-1][:10]} per the catalogue) standing on ground that was "
+      f"flooded on 2014-09-10. They are not counts of buildings flooded in 2014.** The OpenStreetMap "
+      "counts in step 4 are unchanged.\n")
+
+    w("### Source\n")
+    w(f"- {src['stac_api']}, collection `{src['collection']}` ({src['collection_title']}), licence "
+      f"{src['license']}.")
+    w(f"- Dataset version (processing date): **{src['dataset_version_processing_date']}**; Delta "
+      f"table `{src['delta_table']}`; transaction log: {src['delta_log']['log_files']} file(s), "
+      f"{src['delta_log']['json_commits_replayed']} commit(s) replayed, checkpoint "
+      f"{'none' if src['delta_log']['checkpoint_version'] < 0 else src['delta_log']['checkpoint_version']}.")
+    w(f"- Imagery dates given by the catalogue for every item: start {', '.join(s[:10] for s in starts)}, "
+      f"end {', '.join(e[:10] for e in ends)}. No per-building dates are provided.")
+    w(f"- Downloaded {src['started_utc']} to {src['finished_utc']}. TLS verified with the "
+      f"{src['tls_ca_bundle']} certificate bundle.\n")
+    w("| Item | Quadkey | Files | Bytes | Server MD5 checked | Rows | Files in folder not in log | In log not in folder |")
+    w("|---|---|---|---|---|---|---|---|")
+    for i in mr["items"]:
+        w(f"| `{i['id']}` | {i['quadkey']} | {i['files']} | {i['bytes']} | {i['md5_verified_files']} "
+          f"| {i['rows']} | {len(i['files_in_directory_not_in_log'])} | {len(i['files_in_log_not_in_directory'])} |")
+    w(f"\nFiles were checked against the server's size; the server sent no Content-MD5, so each file's "
+      "sha256 was computed locally (in `data/msbuildings/record.json`) and its row count checked "
+      f"against the Delta log. Rows read: {ld['rows']}; byte-identical duplicates removed: "
+      f"{ld['duplicates_removed']}; unparseable or empty: {ld['unparseable_or_empty']}. Coordinate "
+      f"system declared in the files: WGS 84 (EPSG:4326). Footprints near the clip box: "
+      f"{mr['footprints_near_clip_box']}. Footprint area in the analysis area: median "
+      f"{mr['footprint_area_in_analysis_area']['median_m2']} m2, 10th-90th percentile "
+      f"{mr['footprint_area_in_analysis_area']['p10_p90_m2'][0]}-"
+      f"{mr['footprint_area_in_analysis_area']['p10_p90_m2'][1]} m2.\n")
+
+    def row(name, v):
+        t = v["total_in_analysis_area"]
+        return (f"| {name} | **{v['flooded']}** | {t} | {100 * v['flooded'] / t:.1f} % "
+                f"| {v['not_assessed']} | {v['dry']} |")
+
+    w("### Footprints on flooded ground\n")
+    w("| Area | On flooded ground | Total footprints | Share | Not assessed | Not flooded |")
+    w("|---|---|---|---|---|---|")
+    for name, v in (("Analysis area, centroid rule", c["analysis_area"]),
+                    ("Srinagar box, centroid rule", c["srinagar_box"]),
+                    ("Analysis area, any-overlap rule", o["analysis_area"]),
+                    ("Srinagar box, any-overlap rule", o["srinagar_box"]),
+                    ("Inside step 3 water/wetland polygons", c["inside_water_wetland"]),
+                    ("Outside step 3 water/wetland polygons", c["outside_water_wetland"]),
+                    ("Srinagar box, inside water/wetland", c["srinagar_inside_water_wetland"]),
+                    ("Srinagar box, outside water/wetland", c["srinagar_outside_water_wetland"])):
+        w(row(name, v))
+    w("")
+
+    w("### Srinagar 1 km grid\n")
+    w(f"{g['cells']} cells (1 km UTM cells clipped to the Srinagar box); footprints on flooded ground "
+      f"in the grid: {g['ms_flooded_in_grid']} of {g['ms_total_in_grid']}. Motor roads from the step 4 "
+      "OSM extract. Labels are the nearest named OSM suburb, neighbourhood or quarter to the cell "
+      "centre; the distance shows how loose a label is.\n")
+
+    def table(rows):
+        w("| Cell lower-left (UTM 43N, m) | Nearest place | Distance (m) | Footprints on flooded ground "
+          "| Footprints | Flooded motor road km | Motor road km | Flooded share |")
+        w("|---|---|---|---|---|---|---|---|")
+        for r in rows:
+            sh = f"{100 * r['motor_flooded_share']:.1f} %" if r["motor_flooded_share"] is not None else "-"
+            w(f"| {r['cell_lower_left_utm'][0]:.0f}, {r['cell_lower_left_utm'][1]:.0f} | {r['nearest_place']} "
+              f"| {r['distance_to_place_m']:.0f} | {r['ms_flooded']} | {r['ms_total']} "
+              f"| {r['motor_km_flooded']:.2f} | {r['motor_km_total']:.2f} | {sh} |")
+        w("")
+
+    w("**Top ten by footprints on flooded ground**\n")
+    table(g["top10_flooded_buildings"])
+    w("**Top ten by flooded motor-road length**\n")
+    table(g["top10_flooded_motor_km"])
+    w(f"**Top ten by flooded share of motor road** (cells with at least {g['share_min_road_km']:g} km)\n")
+    table(g["top10_flooded_motor_share"])
+
+    t = x["totals"]
+    w("### Cross-check with OpenStreetMap\n")
+    w(f"In the ten 1 km cells where OSM has the most buildings: {t['osm_buildings']} OSM buildings, of "
+      f"which {t['osm_polygons']} polygons ({t['osm_nodes_skipped']} nodes skipped). Match rule: "
+      f"{x['match_rule']}. **Matched: {t['matched']} ({100 * t['matched_share']:.1f} %)**; touched by any "
+      f"footprint: {t['touched']} ({100 * t['touched_share']:.1f} %). Microsoft footprints in the same "
+      f"cells: {t['ms_footprints']}.\n")
+    w("| Cell lower-left | Nearest place | OSM buildings | OSM polygons | Matched | Touched | Microsoft footprints |")
+    w("|---|---|---|---|---|---|---|")
+    for r in x["cells"]:
+        w(f"| {r['cell_lower_left_utm'][0]:.0f}, {r['cell_lower_left_utm'][1]:.0f} | {r['nearest_place']} "
+          f"| {r['osm_buildings']} | {r['osm_polygons']} | {r['matched']} | {r['touched_by_any_footprint']} "
+          f"| {r['ms_footprints_in_cell']} |")
+    w("\nWhy some touched OSM buildings are not matched was not examined. Possible causes include "
+      "outlines that differ in size or position, or one OSM outline covering several footprints.\n")
+
+    w("### Completeness (same test as step 4)\n")
+    w(f"2 km cells over the analysis area with at least {co['road_min_km']:g} km of motor road: "
+      f"{co['cells_with_ge_2km_motor_road']}. Cells with roads but no footprint: "
+      f"**{co['c1_cells_roads_no_buildings']}** (step 4 OSM: see above), holding "
+      f"{co['c1_flooded_km2_in_flagged']} km2 of the flooded area. Footprints per km of motor road, "
+      f"10th/25th/50th/75th/90th percentile: {' / '.join(str(v) for v in co['c2_buildings_per_motor_km_p10_p25_p50_p75_p90'])}; "
+      f"Srinagar box cells: {' / '.join(str(v) for v in co['c2_srinagar_box_cells'])}; other cells: "
+      f"{' / '.join(str(v) for v in co['c2_rest_cells'])}. Cells under one footprint per km: "
+      f"{co['c2_cells_lt_1_building_per_km']}. By this test the footprint data are far more complete "
+      "than OSM buildings; the test cannot show buildings the model missed or merged.\n")
 
 
 if __name__ == "__main__":
