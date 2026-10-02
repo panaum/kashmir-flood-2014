@@ -194,6 +194,36 @@ into METHODS.md unchanged.
 - C3. Nothing here corrects counts; it only warns where OSM may be missing
   buildings.
 
+**Amendment 1 (committed before any building or road was downloaded or counted)**
+
+- The source changes from the Overpass API to a Geofabrik regional extract.
+- Reason: no Overpass server was reliable. On 2026-10-02 overpass-api.de
+  returned HTTP 504 for every tile and for a 0.1 degree test tile;
+  overpass.private.coffee and overpass.kumi.systems could not be reached;
+  maps.mail.ru answered two of three test requests and then returned 504.
+- No buildings or roads had been downloaded or counted before this change.
+- Every other rule above stays as committed. Rule B1's Overpass tiling and
+  retry details no longer apply; everything else in B1 to C3 does.
+
+How the amendment is implemented:
+
+- G1. The extract is the smallest one (by area of its published boundary)
+  in Geofabrik's index (`https://download.geofabrik.de/index-v1.json`)
+  whose boundary contains the whole analysis area. If none does, or if any
+  part of the analysis area falls outside the chosen extract's boundary, the
+  work stops.
+- G2. The `.osm.pbf` file is verified against Geofabrik's published MD5
+  (`.md5` file next to it). Recorded: file name, URL, size, MD5, sha256 and
+  the OpenStreetMap data timestamp in the file header.
+- G3. Buildings, roads and the Srinagar areas (A1) are read from the file
+  with the same tag rules (B2, R1, A1). Ways and relations are built from
+  their node locations and members in the file, as in B2. An element is used
+  if any of its nodes lies in the clip box (for A1: in the Srinagar box).
+- G4. The inside/outside water and wetland split (W1) keeps the step 3
+  polygons (`data/osm/water_wetland_mask.tif`, from Overpass on 2026-10-02)
+  exactly as they are. They are not re-derived from the extract. The two
+  OpenStreetMap snapshots have different dates; both are recorded.
+
 ## Summary
 
 | | 2014-08-25 | 2014-09-10 |
