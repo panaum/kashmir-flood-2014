@@ -1,0 +1,74 @@
+{
+  "srinagar_bbox_wgs84": [
+    74.65,
+    33.95,
+    74.95,
+    34.2
+  ],
+  "stretch_2_98_percentile_raw_DN": {
+    "swir1": [
+      7842.0,
+      29269.0
+    ],
+    "nir": [
+      8995.0,
+      37075.0
+    ],
+    "red": [
+      7355.0,
+      37552.0
+    ]
+  },
+  "qa_pixel": {
+    "2014-08-25": {
+      "srinagar": {
+        "valid_pixels": 855624,
+        "dilated_cloud_fraction": 0.0033,
+        "cirrus_fraction": 0.0,
+        "cloud_fraction": 0.0023,
+        "cloud_shadow_fraction": 0.005,
+        "snow_fraction": 0.0,
+        "clear_fraction": 0.9944,
+        "cloud_or_shadow_fraction": 0.0073,
+        "cloud_shadow_cirrus_or_dilated_fraction": 0.0091
+      },
+      "srinagar_pixels_total": 855624,
+      "whole_valid_area": {
+        "valid_pixels": 15150101,
+        "dilated_cloud_fraction": 0.0663,
+        "cirrus_fraction": 0.021,
+        "cloud_fraction": 0.1889,
+        "cloud_shadow_fraction": 0.1005,
+        "snow_fraction": 0.0021,
+        "clear_fraction": 0.7449,
+        "cloud_or_shadow_fraction": 0.2894,
+        "cloud_shadow_cirrus_or_dilated_fraction": 0.3096
+      }
+    },
+    "2014-09-10": {
+      "srinagar": {
+        "valid_pixels": 855623,
+        "dilated_cloud_fraction": 0.0097,
+        "cirrus_fraction": 0.0,
+        "cloud_fraction": 0.0096,
+        "cloud_shadow_fraction": 0.0143,
+        "snow_fraction": 0.0,
+        "clear_fraction": 0.9807,
+        "cloud_or_shadow_fraction": 0.0239,
+        "cloud_shadow_cirrus_or_dilated_fraction": 0.0288
+      },
+      "srinagar_pixels_total": 855624,
+      "whole_valid_area": {
+        "valid_pixels": 15149972,
+        "dilated_cloud_fraction": 0.0617,
+        "cirrus_fraction": 0.0059,
+        "cloud_fraction": 0.0925,
+        "cloud_shadow_fraction": 0.0892,
+        "snow_fraction": 0.0277,
+        "clear_fraction": 0.8458,
+        "cloud_or_shadow_fraction": 0.1817,
+        "cloud_shadow_cirrus_or_dilated_fraction": 0.2078
+      }
+    }
+  }
+}
