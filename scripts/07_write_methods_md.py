@@ -45,6 +45,7 @@ def main():
     # area was computed.
     w((Path(__file__).parent / "step3_rules.md").read_text())
     w((Path(__file__).parent / "step4_rules.md").read_text())
+    w((Path(__file__).parent / "step4b_rules.md").read_text())
 
     # ---- Summary
     w("## Summary\n")
