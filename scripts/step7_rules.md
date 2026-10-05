@@ -190,3 +190,27 @@ and not water on 25 August.
   recorded as a gap. They are not filled in or inferred, and no result that
   depends on them is reported. The water validation uses the August water,
   September water and confidence fields only.
+
+**Amendment 3: clarifications of rule M (committed before any metric was computed)**
+
+Rule M left three points open. They were settled by the project owner before
+any validation metric was calculated:
+
+- F1 interval: F1 is computed as the ratio of stratified means F1 = Y / X
+  with y = 2 x [map water and reference water] and x = [map water] +
+  [reference water] (for the flood: flooded instead of water). This equals
+  2 P R / (P + R), and its variance is the M2 linearised ratio variance,
+  applied unchanged (the formula holds for any y and x, not only 0/1
+  indicators).
+- Variance denominator: s_h^2 and s_h(x, y) are the sample variance and
+  covariance within stratum h with denominator n_h - 1.
+- Interval bounds: 95 % intervals are reported exactly as estimate plus or
+  minus 1.96 standard errors, not clipped; every bound outside [0, 1] (or
+  below 0 km2 for the area) is flagged.
+
+Implementation details that follow directly from rules S and M: stratum
+weights W_h use the stratum areas from rule S on the step 3 rasters (the
+same computation that drew the sample), and every sample's stratum in the
+hidden key is checked against them; n_h is the number of reference rows in
+stratum h usable for the quantity concerned (after cannot-tell exclusion,
+rule C); no finite-population correction is applied, as M1 states none.
