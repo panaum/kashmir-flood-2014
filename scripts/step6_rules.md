@@ -99,3 +99,31 @@ measured to choose the bands in D2.
   `outputs/figures/river_distance.png` (flood fraction and areas by band).
 - D8. Descriptive only. No regression is fitted. No causal language is used.
   Distance and elevation are spatially related.
+
+**Amendment 1 to J5 (committed before any distance-band result was produced)**
+
+- Reason: the first run of `24_river_distance.py` stopped at J5, before any
+  band result was computed. 90,526 analysis-area pixels (81.5 km2, all in
+  the north-west corner, lon 74.19 to 74.35, lat 34.43 to 34.60) are closer
+  to the edge of the Geofabrik extract (19.1 to 30.2 km) than to the mapped
+  Jhelum centreline (26.2 to 37.6 km). Nine downstream main_stream members
+  are outside the extract (the mapped line leaves it at 34.108 N, 73.900 E),
+  so for these pixels a missing member could in principle be closer. The
+  diagnosis used distances only, no flood information. No data were
+  downloaded.
+- Amended J5: a pixel whose distance to the extract boundary is smaller than
+  its distance to the mapped centreline is "boundary-affected". Its true
+  distance to the full river lies between those two values (lower bound =
+  distance to the extract boundary, upper bound = distance to the mapped
+  centreline). Such a pixel may proceed only if that whole range lies inside
+  one D2 band; it is then assigned to that band for band-level area
+  calculations. If the range of any boundary-affected pixel crosses a D2
+  band edge, the work stops.
+- For this run all 81.5 km2 have both bounds at or above 15,000 m, so they
+  stay in the ">= 15,000 m" band. The D2 bands are unchanged.
+- Exact distances of boundary-affected pixels are not treated as known. The
+  exact-distance statistics (D4) are computed only from pixels that are not
+  boundary-affected and are labelled so; the boundary-affected pixels are
+  reported separately with their lower and upper bounds. A flag raster
+  `data/river/jhelum_distance_flag.tif` (1 = value in the distance raster is
+  an upper bound) accompanies the distance raster.
