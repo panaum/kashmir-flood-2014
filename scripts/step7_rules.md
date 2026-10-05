@@ -147,3 +147,46 @@ and not water on 25 August.
 - v2 paths: hidden key `data/validation/v2/key.csv` (not committed);
   labelling material `data/validation/labelling_v2/` (not committed); blind
   sample list, labels template and key checksum in `outputs/validation/v2/`.
+
+**Amendment 2: reference labels collected on the v1 sample (committed before any validation result)**
+
+- What happened: the human labelling was carried out on the original v1
+  sample (392 points, ids V001 to V392, rules of commit `cd73ad0`, sample of
+  commit `0dc1aea`), not on the v2 sample of amendment 1. This was a mistake:
+  the two labelling pages look alike.
+- It was discovered before any validation metric, agreement statistic,
+  confusion matrix, accuracy estimate or other validation result was
+  calculated. Only integrity checks had been run (ids, duplicates, allowed
+  values, completeness, counts by stratum).
+- The labelling stayed blind: the v1 page and chips show no map class, MNDWI,
+  stratum, OSM layer, building outline or validation outcome (checked by the
+  B3 blinding check in commit `0dc1aea`), and none was revealed during
+  labelling.
+- The labels are therefore kept as an independently collected human
+  reference set, and amendment 1 is superseded for the choice of sample: the
+  validation uses the v1 sample. The v2 sample (commit `fb17be8`) is not
+  labelled or used for any result.
+- Nothing is rewritten or deleted: the original rules, the v1 sample and its
+  key (`data/validation/key.csv`, sha256 1be0d65a...a624 as committed), and
+  amendment 1 and its v2 sample stay as they are. The 376.6077 km2 result and
+  all earlier results are unchanged.
+- Reference set: every v1 row in which August water, September water and
+  confidence are all present. Inclusion depends only on whether a row was
+  completed, never on its answers or on the map class. No sample is
+  rebalanced, replaced or removed on the basis of its labels or its map
+  class. The v1 ids were assigned in random order (rule P3) and were
+  labelled largely in id order, so the completed rows are a subset of the
+  stratified sample with unequal numbers per stratum; the stratified
+  estimators of rule M are used with the actual n_h of each stratum.
+- The 11 rows that have both water answers but no confidence are completed
+  by the interpreter (confidence only) before the reference set is frozen.
+  The interim export received on 2026-10-05 is kept, not committed, at
+  `data/validation/received/labels_v1_interim_2026-10-05.csv` (sha256
+  1408e31efd0e8c1ac0b98d7a3294fa3d252087f7d6fffe2772dd5a600799fbba).
+  The final labels file is committed, with its sha256, before any metric is
+  computed.
+- Surface fields: the surface (cover) fields of rule L were not meaningfully
+  collected in this session (blank in almost every completed row). This is
+  recorded as a gap. They are not filled in or inferred, and no result that
+  depends on them is reported. The water validation uses the August water,
+  September water and confidence fields only.
