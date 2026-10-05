@@ -214,3 +214,50 @@ same computation that drew the sample), and every sample's stratum in the
 hidden key is checked against them; n_h is the number of reference rows in
 stratum h usable for the quantity concerned (after cannot-tell exclusion,
 rule C); no finite-population correction is applied, as M1 states none.
+
+**Amendment 4: fresh blind validation on the W sample with a clarified annotation protocol (committed before any W label was collected)**
+
+- Why: the first validation attempt (labels frozen in `e41196f`, metrics in
+  `4e68f07`) produced anomalous human labels: they disagree systematically
+  with the intended meaning of "water", especially for 25 August 2014 (see
+  `outputs/validation/metrics_v1_interpretation_note.md`). Those metrics are
+  kept unchanged as a diagnostic run and are not the map's accuracy. The 116
+  labels were used only to identify this general ambiguity; no individual
+  disagreement point was inspected, and they are not relabelled or used to
+  tune this protocol in any other way.
+- Validation set: a prospective, fresh blind validation on the untouched v2
+  sample (W001 to W140, seed 20140825, commit `fb17be8`; hidden key
+  `data/validation/v2/key.csv`, sha256 3b2d4529...9baf). Amendment 2's use of
+  the v1 labels stays recorded as the diagnostic run. The sample, strata,
+  weights, key, blinding (B1 to B4), label fields (L), cannot-tell handling
+  (C) and metrics (M with amendment 3) are unchanged. W metrics are computed
+  only after all W labels are complete and frozen, and W labels are never
+  compared with map predictions during labelling.
+- Operational definition, shown to the interpreter: "Water at the centre
+  pixel" means open surface water visible at the exact centre of the marked
+  30 m Landsat pixel in the corresponding image. The following are not open
+  water: dark vegetation; crops or fields that merely appear dark; wet or
+  waterlogged soil without visible open water; shadows; generally dark
+  surfaces; water inferred only from surrounding pixels. If open water is not
+  confidently distinguishable at the centre pixel, the answer is "cannot
+  tell", not a guess. "Water with vegetation" stays a separate surface
+  description; a vegetation-covered or ambiguous surface is not open water
+  merely because it looks wet. Judgement is made from the blinded imagery
+  only, without any project map, result, earlier label or other sample set.
+- Colour scale of the W chips (visualisation only; pixel values unchanged):
+  for each W sample and each band (SWIR1, NIR, Red, Green), the lower and
+  upper display limits are the 2nd and 98th percentiles of that band's
+  surface-reflectance DN values over the sample's 201 x 201 pixel context
+  window, pooling both dates, using only pixels inside the grid whose DN is
+  not 0 and whose QA_PIXEL fill bit (bit 0) is 0 on that date. Values are
+  mapped linearly from the limits to 0-255 and clipped. The same limits are
+  used for both dates and for every chip of that sample (detail chips a and
+  b, context chip c). If the upper limit is not at least 1 DN above the
+  lower limit, the step 1 valley-wide limits for that band are used instead.
+  The limits depend only on the reflectance bands and the fill mask, never on
+  the map class, MNDWI, flood mask, prediction, labels or validation
+  results. The v1 chips and page are unchanged.
+- Page: `scripts/validation_page_w.html`, shown as "Open-water labelling: W
+  sample (W001 to W140)", with the wording above. Answers are stored under a
+  separate browser-storage name from the v1 page, the page accepts only W
+  ids when loading a CSV, and it downloads `labels_W.csv`.
