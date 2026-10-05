@@ -1,0 +1,554 @@
+{
+ "script": "scripts/26_validation_metrics.py",
+ "rules": "scripts/step7_rules.md, rules C and M with amendments 2 and 3",
+ "nature_of_reference": "Image-based reference interpretation of the same Landsat 8 scenes by a human interpreter who knows the project; not field truth or independent ground truth.",
+ "inputs": {
+  "labels": "outputs/validation/labels_v1_final.csv",
+  "labels_sha256": "8cf11c56cb3af6333bace9e4748b8c3499c438196e64577c05ad1752d305dc2c",
+  "key": "data/validation/key.csv (not committed; sha256 in outputs/validation/key_sha256.txt)"
+ },
+ "reference_rows": 116,
+ "reference_rows_by_stratum": {
+  "S1": 18,
+  "S2": 9,
+  "S3": 21,
+  "S4": 16,
+  "S5": 19,
+  "S6": 17,
+  "S7": 16
+ },
+ "excluded": {
+  "incomplete_rows": 276,
+  "V005": "stray confidence value, no water answers; not in the reference set (freeze record)",
+  "v2_sample": "not read"
+ },
+ "stratum_area_km2": {
+  "S1": 38.5767,
+  "S2": 338.031,
+  "S3": 37.0908,
+  "S4": 87.6861,
+  "S5": 750.9366,
+  "S6": 653.8869,
+  "S7": 1790.0334
+ },
+ "stratum_weights": {
+  "S1": 0.010437,
+  "S2": 0.091453,
+  "S3": 0.010035,
+  "S4": 0.023723,
+  "S5": 0.203162,
+  "S6": 0.176906,
+  "S7": 0.484285
+ },
+ "total_assessed_km2": 3696.2415,
+ "cannot_tell": {
+  "by_date": {
+   "aug": 0,
+   "sep": 0
+  },
+  "by_stratum": {
+   "S1": {
+    "aug": 0,
+    "sep": 0
+   },
+   "S2": {
+    "aug": 0,
+    "sep": 0
+   },
+   "S3": {
+    "aug": 0,
+    "sep": 0
+   },
+   "S4": {
+    "aug": 0,
+    "sep": 0
+   },
+   "S5": {
+    "aug": 0,
+    "sep": 0
+   },
+   "S6": {
+    "aug": 0,
+    "sep": 0
+   },
+   "S7": {
+    "aug": 0,
+    "sep": 0
+   }
+  },
+  "c4_flag": false
+ },
+ "small_strata_n_lt_10": [
+  "S2"
+ ],
+ "water_2014_08_25": {
+  "n_used_by_stratum": {
+   "S1": 18,
+   "S2": 9,
+   "S3": 21,
+   "S4": 16,
+   "S5": 19,
+   "S6": 17,
+   "S7": 16
+  },
+  "n_used": 116,
+  "excluded_cannot_tell": 0,
+  "error_matrix_proportions": {
+   "map_positive_ref_positive": {
+    "estimate": 0.009557,
+    "se": 0.000478,
+    "ci95": [
+     0.00862,
+     0.010493
+    ],
+    "bound_outside_0_1": false
+   },
+   "map_positive_ref_negative": {
+    "estimate": 0.000478,
+    "se": 0.000478,
+    "ci95": [
+     -0.000459,
+     0.001414
+    ],
+    "bound_outside_0_1": true
+   },
+   "map_negative_ref_positive": {
+    "estimate": 0.424764,
+    "se": 0.071759,
+    "ci95": [
+     0.284116,
+     0.565411
+    ],
+    "bound_outside_0_1": false
+   },
+   "map_negative_ref_negative": {
+    "estimate": 0.565202,
+    "se": 0.071759,
+    "ci95": [
+     0.424555,
+     0.705849
+    ],
+    "bound_outside_0_1": false
+   }
+  },
+  "overall_accuracy": {
+   "estimate": 0.574759,
+   "se": 0.07176,
+   "ci95": [
+    0.434108,
+    0.715409
+   ],
+   "bound_outside_0_1": false
+  },
+  "precision_users_accuracy": {
+   "estimate": 0.952381,
+   "se": 0.047619,
+   "ci95": [
+    0.859048,
+    1.045714
+   ],
+   "bound_outside_0_1": true
+  },
+  "recall_producers_accuracy": {
+   "estimate": 0.022004,
+   "se": 0.003791,
+   "ci95": [
+    0.014573,
+    0.029435
+   ],
+   "bound_outside_0_1": false
+  },
+  "f1": {
+   "estimate": 0.043015,
+   "se": 0.007258,
+   "ci95": [
+    0.028789,
+    0.057241
+   ],
+   "bound_outside_0_1": false
+  },
+  "map_positive_proportion": {
+   "estimate": 0.010035,
+   "se": 0.0,
+   "ci95": [
+    0.010035,
+    0.010035
+   ],
+   "bound_outside_0_1": false
+  },
+  "ref_positive_proportion": {
+   "estimate": 0.43432,
+   "se": 0.07176,
+   "ci95": [
+    0.29367,
+    0.574971
+   ],
+   "bound_outside_0_1": false
+  },
+  "raw_counts_by_stratum": {
+   "S1": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 6,
+    "c00": 12
+   },
+   "S2": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 4,
+    "c00": 5
+   },
+   "S3": {
+    "c11": 20,
+    "c10": 1,
+    "c01": 0,
+    "c00": 0
+   },
+   "S4": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 7,
+    "c00": 9
+   },
+   "S5": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 8,
+    "c00": 11
+   },
+   "S6": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 7,
+    "c00": 10
+   },
+   "S7": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 7,
+    "c00": 9
+   }
+  },
+  "zero_variance_strata_for_accuracy": []
+ },
+ "water_2014_09_10": {
+  "n_used_by_stratum": {
+   "S1": 18,
+   "S2": 9,
+   "S3": 21,
+   "S4": 16,
+   "S5": 19,
+   "S6": 17,
+   "S7": 16
+  },
+  "n_used": 116,
+  "excluded_cannot_tell": 0,
+  "error_matrix_proportions": {
+   "map_positive_ref_positive": {
+    "estimate": 0.089862,
+    "se": 0.013475,
+    "ci95": [
+     0.06345,
+     0.116273
+    ],
+    "bound_outside_0_1": false
+   },
+   "map_positive_ref_negative": {
+    "estimate": 0.022062,
+    "se": 0.013475,
+    "ci95": [
+     -0.004349,
+     0.048474
+    ],
+    "bound_outside_0_1": true
+   },
+   "map_negative_ref_positive": {
+    "estimate": 0.399941,
+    "se": 0.069998,
+    "ci95": [
+     0.262745,
+     0.537138
+    ],
+    "bound_outside_0_1": false
+   },
+   "map_negative_ref_negative": {
+    "estimate": 0.488135,
+    "se": 0.069998,
+    "ci95": [
+     0.350938,
+     0.625331
+    ],
+    "bound_outside_0_1": false
+   }
+  },
+  "overall_accuracy": {
+   "estimate": 0.577996,
+   "se": 0.071284,
+   "ci95": [
+    0.43828,
+    0.717712
+   ],
+   "bound_outside_0_1": false
+  },
+  "precision_users_accuracy": {
+   "estimate": 0.802882,
+   "se": 0.120397,
+   "ci95": [
+    0.566904,
+    1.03886
+   ],
+   "bound_outside_0_1": true
+  },
+  "recall_producers_accuracy": {
+   "estimate": 0.183465,
+   "se": 0.034527,
+   "ci95": [
+    0.115793,
+    0.251138
+   ],
+   "bound_outside_0_1": false
+  },
+  "f1": {
+   "estimate": 0.29868,
+   "se": 0.051564,
+   "ci95": [
+    0.197614,
+    0.399745
+   ],
+   "bound_outside_0_1": false
+  },
+  "map_positive_proportion": {
+   "estimate": 0.111924,
+   "se": 0.0,
+   "ci95": [
+    0.111924,
+    0.111924
+   ],
+   "bound_outside_0_1": false
+  },
+  "ref_positive_proportion": {
+   "estimate": 0.489803,
+   "se": 0.071284,
+   "ci95": [
+    0.350087,
+    0.629519
+   ],
+   "bound_outside_0_1": false
+  },
+  "raw_counts_by_stratum": {
+   "S1": {
+    "c11": 15,
+    "c10": 3,
+    "c01": 0,
+    "c00": 0
+   },
+   "S2": {
+    "c11": 7,
+    "c10": 2,
+    "c01": 0,
+    "c00": 0
+   },
+   "S3": {
+    "c11": 21,
+    "c10": 0,
+    "c01": 0,
+    "c00": 0
+   },
+   "S4": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 13,
+    "c00": 3
+   },
+   "S5": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 8,
+    "c00": 11
+   },
+   "S6": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 8,
+    "c00": 9
+   },
+   "S7": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 7,
+    "c00": 9
+   }
+  },
+  "zero_variance_strata_for_accuracy": [
+   "S3"
+  ]
+ },
+ "flood": {
+  "n_used_by_stratum": {
+   "S1": 18,
+   "S2": 9,
+   "S3": 21,
+   "S4": 16,
+   "S5": 19,
+   "S6": 17,
+   "S7": 16
+  },
+  "n_used": 116,
+  "excluded_cannot_tell": 0,
+  "error_matrix_proportions": {
+   "map_positive_ref_positive": {
+    "estimate": 0.057185,
+    "se": 0.016114,
+    "ci95": [
+     0.025602,
+     0.088768
+    ],
+    "bound_outside_0_1": false
+   },
+   "map_positive_ref_negative": {
+    "estimate": 0.044704,
+    "se": 0.016114,
+    "ci95": [
+     0.013121,
+     0.076288
+    ],
+    "bound_outside_0_1": false
+   },
+   "map_negative_ref_positive": {
+    "estimate": 0.087525,
+    "se": 0.025813,
+    "ci95": [
+     0.036932,
+     0.138118
+    ],
+    "bound_outside_0_1": false
+   },
+   "map_negative_ref_negative": {
+    "estimate": 0.810585,
+    "se": 0.025813,
+    "ci95": [
+     0.759993,
+     0.861178
+    ],
+    "bound_outside_0_1": false
+   }
+  },
+  "overall_accuracy": {
+   "estimate": 0.86777,
+   "se": 0.030429,
+   "ci95": [
+    0.808129,
+    0.927412
+   ],
+   "bound_outside_0_1": false
+  },
+  "precision_users_accuracy": {
+   "estimate": 0.561246,
+   "se": 0.158151,
+   "ci95": [
+    0.25127,
+    0.871222
+   ],
+   "bound_outside_0_1": false
+  },
+  "recall_producers_accuracy": {
+   "estimate": 0.395169,
+   "se": 0.097491,
+   "ci95": [
+    0.204086,
+    0.586252
+   ],
+   "bound_outside_0_1": false
+  },
+  "f1": {
+   "estimate": 0.463788,
+   "se": 0.111506,
+   "ci95": [
+    0.245237,
+    0.68234
+   ],
+   "bound_outside_0_1": false
+  },
+  "map_positive_proportion": {
+   "estimate": 0.101889,
+   "se": 0.0,
+   "ci95": [
+    0.101889,
+    0.101889
+   ],
+   "bound_outside_0_1": false
+  },
+  "ref_positive_proportion": {
+   "estimate": 0.14471,
+   "se": 0.030429,
+   "ci95": [
+    0.085068,
+    0.204352
+   ],
+   "bound_outside_0_1": false
+  },
+  "raw_counts_by_stratum": {
+   "S1": {
+    "c11": 11,
+    "c10": 7,
+    "c01": 0,
+    "c00": 0
+   },
+   "S2": {
+    "c11": 5,
+    "c10": 4,
+    "c01": 0,
+    "c00": 0
+   },
+   "S3": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 1,
+    "c00": 20
+   },
+   "S4": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 9,
+    "c00": 7
+   },
+   "S5": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 3,
+    "c00": 16
+   },
+   "S6": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 4,
+    "c00": 13
+   },
+   "S7": {
+    "c11": 0,
+    "c10": 0,
+    "c01": 0,
+    "c00": 16
+   }
+  },
+  "zero_variance_strata_for_accuracy": [
+   "S7"
+  ]
+ },
+ "reference_based_flooded_area_km2": {
+  "estimate": 534.8831,
+  "se": 112.4729,
+  "ci95": [
+   314.4319,
+   755.3343
+  ],
+  "bound_below_0": false,
+  "primary_result_km2": 376.6077,
+  "note": "secondary; does not replace the primary result"
+ },
+ "map_flood_area_from_sample_km2": 376.6077,
+ "m6_low_confidence": {
+  "low_confidence_rows": 0,
+  "note": "No low-confidence labels; the sensitivity without them is identical to the primary metrics."
+ }
+}

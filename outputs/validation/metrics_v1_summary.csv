@@ -1,0 +1,20 @@
+target,metric,estimate,se,ci95_low,ci95_high,bound_outside_0_1,n_used
+water 2014-08-25,overall_accuracy,0.574759,0.07176,0.434108,0.715409,False,116
+water 2014-08-25,precision_users_accuracy,0.952381,0.047619,0.859048,1.045714,True,116
+water 2014-08-25,recall_producers_accuracy,0.022004,0.003791,0.014573,0.029435,False,116
+water 2014-08-25,f1,0.043015,0.007258,0.028789,0.057241,False,116
+water 2014-08-25,map_positive_proportion,0.010035,0.0,0.010035,0.010035,False,116
+water 2014-08-25,ref_positive_proportion,0.43432,0.07176,0.29367,0.574971,False,116
+water 2014-09-10,overall_accuracy,0.577996,0.071284,0.43828,0.717712,False,116
+water 2014-09-10,precision_users_accuracy,0.802882,0.120397,0.566904,1.03886,True,116
+water 2014-09-10,recall_producers_accuracy,0.183465,0.034527,0.115793,0.251138,False,116
+water 2014-09-10,f1,0.29868,0.051564,0.197614,0.399745,False,116
+water 2014-09-10,map_positive_proportion,0.111924,0.0,0.111924,0.111924,False,116
+water 2014-09-10,ref_positive_proportion,0.489803,0.071284,0.350087,0.629519,False,116
+flood,overall_accuracy,0.86777,0.030429,0.808129,0.927412,False,116
+flood,precision_users_accuracy,0.561246,0.158151,0.25127,0.871222,False,116
+flood,recall_producers_accuracy,0.395169,0.097491,0.204086,0.586252,False,116
+flood,f1,0.463788,0.111506,0.245237,0.68234,False,116
+flood,map_positive_proportion,0.101889,0.0,0.101889,0.101889,False,116
+flood,ref_positive_proportion,0.14471,0.030429,0.085068,0.204352,False,116
+flood,reference_based_flooded_area_km2,534.8831,112.4729,314.4319,755.3343,False,116
