@@ -1,0 +1,22 @@
+{
+ "design": "v2",
+ "rules": "scripts/step7_rules.md (amendment 1)",
+ "seed": 20140825,
+ "per_stratum": 20,
+ "total": 140,
+ "min_spacing_rule_m": 300.0,
+ "min_pairwise_spacing_achieved_m": 408.0,
+ "id_prefix": "W",
+ "per_stratum_counts": {
+  "S5": 20,
+  "S3": 20,
+  "S4": 20,
+  "S2": 20,
+  "S7": 20,
+  "S6": 20,
+  "S1": 20
+ },
+ "chips": 840,
+ "blinding_check": "passed",
+ "key_sha256": "3b2d4529028470eb04e947bd589bda1ff44c589369cc6a4484dd6b521d6f9baf"
+}

@@ -19,9 +19,16 @@ Outputs:
   outputs/validation/labels_template.csv       empty labels (committed)
   outputs/validation/key_sha256.txt            checksum of the hidden key (committed)
 
-Usage:  .venv/bin/python scripts/25_validation_sample.py
+Designs (step7_rules.md): v1 = 56 per stratum, 392 samples, seed 20140910,
+ids V001-V392 (the original design, not to be labelled); v2 (amendment 1) =
+20 per stratum, 140 samples, seed 20140825, ids W001-W140, separate paths
+(data/validation/v2/key.csv, data/validation/labelling_v2/,
+outputs/validation/v2/). Running one design never touches the other's files.
+
+Usage:  .venv/bin/python scripts/25_validation_sample.py --design v2
 """
 
+import argparse
 import csv
 import hashlib
 import json
@@ -39,10 +46,14 @@ from scipy import ndimage
 ROOT = Path(__file__).resolve().parent.parent
 CLIP = ROOT / "data" / "clipped"
 VAL = ROOT / "data" / "validation"
-LAB = VAL / "labelling"
-OUT = ROOT / "outputs" / "validation"
-SEED = 20140910                       # P2
-PER_STRATUM = 56                      # P1
+DESIGNS = {
+    "v1": {"seed": 20140910, "per_stratum": 56, "prefix": "V", "key": VAL / "key.csv",
+           "lab": VAL / "labelling", "out": ROOT / "outputs" / "validation",
+           "rule_text": ["default_rng(20140910)", "56 samples per stratum"]},
+    "v2": {"seed": 20140825, "per_stratum": 20, "prefix": "W", "key": VAL / "v2" / "key.csv",
+           "lab": VAL / "labelling_v2", "out": ROOT / "outputs" / "validation" / "v2",
+           "rule_text": ["default_rng(20140825)", "20 samples per stratum (140 in total, design"]},
+}
 MIN_SPACING_M = 300.0                 # P2
 EDGE_M = 500.0                        # S6
 BUILT_WINDOW, BUILT_MIN = 5, 10       # built-up proxy
@@ -102,9 +113,15 @@ def visible_text(html):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--design", choices=sorted(DESIGNS), default="v1")
+    design = ap.parse_args().design
+    D = DESIGNS[design]
+    SEED, PER_STRATUM, LAB, OUT = D["seed"], D["per_stratum"], D["lab"], D["out"]
+    TOTAL = PER_STRATUM * len(STRATA)
     rules = (Path(__file__).parent / "step7_rules.md").read_text()
-    if "20140910" not in rules or "56 samples per stratum" not in rules:
-        stop("step7_rules.md does not match this script")
+    if any(t not in rules for t in D["rule_text"]):
+        stop(f"step7_rules.md does not contain the {design} design")
     fr = json.loads((ROOT / "data" / "flood_report.json").read_text())
     cls, T, crs = read(ROOT / "data" / "flood" / "flood_classes.tif")
     area = read(ROOT / "data" / "flood" / "analysis_area.tif")[0].astype(bool)
@@ -166,12 +183,12 @@ def main():
     samples = [accepted[i] for i in order]
     lon, lat = warp_transform(crs, "EPSG:4326", [s["x"] for s in samples], [s["y"] for s in samples])
     for n, (s, lo, la) in enumerate(zip(samples, lon, lat), start=1):
-        s["id"] = f"V{n:03d}"
+        s["id"] = f"{D['prefix']}{n:03d}"
         s["lat"], s["lon"] = round(la, 6), round(lo, 6)
 
     # Hidden key (P4).
-    VAL.mkdir(parents=True, exist_ok=True)
-    key_path = VAL / "key.csv"
+    key_path = D["key"]
+    key_path.parent.mkdir(parents=True, exist_ok=True)
     with open(key_path, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["sample_id", "stratum", "map_class", "row", "col", "x_utm43n", "y_utm43n"])
@@ -219,7 +236,8 @@ def main():
         w.writerow(["sample_id", "lat", "lon"])
         for b in blind:
             w.writerow([b["id"], b["lat"], b["lon"]])
-    (OUT / "key_sha256.txt").write_text(f"{key_sha}  data/validation/key.csv\n")
+    (OUT / "key_sha256.txt").write_text(f"{key_sha}  {key_path.relative_to(ROOT)}\n")
+
     shutil.copy(Path(__file__).parent / "validation_page.html", LAB / "index.html")
     (LAB / "README.txt").write_text(
         "Water labelling, Landsat 8, 25 August 2014 and 10 September 2014\n\n"
@@ -253,7 +271,7 @@ def main():
     # Checks on the sample (item 4 of the request; rules P).
     key = list(csv.DictReader(open(key_path)))
     ids = [k["sample_id"] for k in key]
-    if len(set(ids)) != 392 or set(ids) != {b["id"] for b in blind}:
+    if len(ids) != TOTAL or len(set(ids)) != TOTAL or set(ids) != {b["id"] for b in blind}:
         stop("sample ids do not join one-to-one with the key")
     for k in key:
         r, c = int(k["row"]), int(k["col"])
@@ -267,7 +285,13 @@ def main():
     if any(counts.get(s) != PER_STRATUM for s in STRATA):
         stop(f"stratum counts {counts} are not {PER_STRATUM} each")
     n_chips = len(list((LAB / "chips").iterdir()))
-    print(json.dumps({"samples": len(key), "per_stratum": counts, "stratum_km2": stratum_km2,
+    (OUT / "design.json").write_text(json.dumps(
+        {"design": design, "rules": "scripts/step7_rules.md" + (" (amendment 1)" if design == "v2" else ""),
+         "seed": SEED, "per_stratum": PER_STRATUM, "total": TOTAL,
+         "min_spacing_rule_m": MIN_SPACING_M, "min_pairwise_spacing_achieved_m": round(float(d.min()), 1),
+         "id_prefix": D["prefix"], "per_stratum_counts": counts, "chips": n_chips,
+         "blinding_check": "passed", "key_sha256": key_sha}, indent=1))
+    print(json.dumps({"design": design, "seed": SEED, "samples": len(key), "per_stratum": counts, "stratum_km2": stratum_km2,
                       "min_spacing_m": round(float(d.min()), 1), "all_on_assessed_pixels": True,
                       "ids_join_key": True, "chips": n_chips, "blinding_check": "passed",
                       "key_sha256": key_sha, "stretch_limits": lims}, indent=1))
