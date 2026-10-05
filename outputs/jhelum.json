@@ -1,0 +1,270 @@
+{
+ "script": "scripts/23_jhelum.py",
+ "rules": "scripts/step6_rules.md (J)",
+ "source": {
+  "file": "data/osm/geofabrik/northern-zone-latest.osm.pbf",
+  "sha256": "2042983c1ca244f15bca0d20effadd0566c939678e69949d150932f618188cbd",
+  "osm_timestamp": "2026-10-01T20:22:06Z"
+ },
+ "relation": {
+  "id": 8306691,
+  "tags": {
+   "type": "waterway",
+   "waterway": "river",
+   "name": "\u062f\u0631\u06cc\u0627\u0626\u06d2 \u062c\u06c1\u0644\u0645",
+   "name:en": "Jhelum River",
+   "wikidata": "Q214874"
+  },
+  "main_stream_members": 23,
+  "side_stream_members": 2
+ },
+ "selected_ways": [
+  {
+   "way_id": 231807832,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": false,
+   "length_km": 72.876
+  },
+  {
+   "way_id": 509680559,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": false,
+   "length_km": 0.04
+  },
+  {
+   "way_id": 509680560,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": false,
+   "length_km": 2.307
+  },
+  {
+   "way_id": 19802998,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": false,
+   "length_km": 12.342
+  },
+  {
+   "way_id": 75652086,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 20.342
+  },
+  {
+   "way_id": 317780074,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 31.91
+  },
+  {
+   "way_id": 22696256,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 16.581
+  },
+  {
+   "way_id": 317780073,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 2.87
+  },
+  {
+   "way_id": 317241512,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 128.172
+  },
+  {
+   "way_id": 158598119,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 3.717
+  },
+  {
+   "way_id": 165498821,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 30.878
+  },
+  {
+   "way_id": 1050479174,
+   "name": "Chhitar Nar",
+   "waterway_tag": "stream",
+   "in_clip_box": false,
+   "length_km": 9.03
+  },
+  {
+   "way_id": 62103654,
+   "name": "Jhelum River",
+   "waterway_tag": "river",
+   "in_clip_box": true,
+   "length_km": 14.17
+  },
+  {
+   "way_id": 741806002,
+   "name": "Jhelum River",
+   "waterway_tag": "stream",
+   "in_clip_box": false,
+   "length_km": 4.054
+  }
+ ],
+ "main_stream_members_missing_from_extract": [
+  727964480,
+  967005687,
+  967005688,
+  1455513616,
+  923107888,
+  963639411,
+  966736287,
+  966736288,
+  75652211
+ ],
+ "lengths_km": {
+  "selected_total": 349.288,
+  "inside_clip_box": 236.713,
+  "inside_analysis_area": 226.747
+ },
+ "continuity": {
+  "ways_inside_clip_box": 8,
+  "components_before_joining_inside_box": 8,
+  "components_after_joining_inside_box": 1,
+  "components_after_joining_all_selected": 1,
+  "merged_geometry_type": "LineString",
+  "merged_parts": 1
+ },
+ "jhelum_named_ways_not_selected": [
+  {
+   "way_id": 56241496,
+   "name": "Jhelum River",
+   "length_km": 1.6,
+   "shares_nodes_with_chain": true,
+   "min_distance_to_chain_m": 0.0
+  },
+  {
+   "way_id": 102436463,
+   "name": "Jhelum (Veth)",
+   "length_km": 5.57,
+   "shares_nodes_with_chain": false,
+   "min_distance_to_chain_m": 895.8
+  },
+  {
+   "way_id": 102436474,
+   "name": "Jhelum (Veth)",
+   "length_km": 8.77,
+   "shares_nodes_with_chain": false,
+   "min_distance_to_chain_m": 887.5
+  }
+ ],
+ "river_ways_touching_chain_not_selected": [
+  {
+   "way_id": 27267008,
+   "name": "Sind River",
+   "length_km": 117.89,
+   "relation_role": null
+  },
+  {
+   "way_id": 56241496,
+   "name": "Jhelum River",
+   "length_km": 1.6,
+   "relation_role": null
+  },
+  {
+   "way_id": 102436476,
+   "name": "Vishav River",
+   "length_km": 20.33,
+   "relation_role": null
+  },
+  {
+   "way_id": 158598160,
+   "name": "Romshi Nala",
+   "length_km": 4.28,
+   "relation_role": null
+  },
+  {
+   "way_id": 165931985,
+   "name": "Lidder",
+   "length_km": 41.16,
+   "relation_role": null
+  },
+  {
+   "way_id": 167812902,
+   "name": "Neelum River",
+   "length_km": 49.11,
+   "relation_role": null
+  },
+  {
+   "way_id": 167812932,
+   "name": "Hanjishart River",
+   "length_km": 16.44,
+   "relation_role": null
+  },
+  {
+   "way_id": 317060524,
+   "name": null,
+   "length_km": 0.86,
+   "relation_role": null
+  },
+  {
+   "way_id": 317060535,
+   "name": null,
+   "length_km": 1.26,
+   "relation_role": null
+  },
+  {
+   "way_id": 317116047,
+   "name": null,
+   "length_km": 0.32,
+   "relation_role": null
+  },
+  {
+   "way_id": 510383513,
+   "name": null,
+   "length_km": 0.52,
+   "relation_role": null
+  },
+  {
+   "way_id": 515865691,
+   "name": "Haritar Nala",
+   "length_km": 21.87,
+   "relation_role": null
+  },
+  {
+   "way_id": 741783558,
+   "name": null,
+   "length_km": 5.86,
+   "relation_role": null
+  },
+  {
+   "way_id": 1424728287,
+   "name": null,
+   "length_km": 1.39,
+   "relation_role": null
+  },
+  {
+   "way_id": 1511656754,
+   "name": "Ningal Nala",
+   "length_km": 12.99,
+   "relation_role": null
+  }
+ ],
+ "persistent_water_check": {
+  "within_30m_of_persistent_water_pct": 77.58,
+  "within_60m_of_persistent_water_pct": 79.55,
+  "within_90m_of_persistent_water_pct": 80.75,
+  "within_90m_of_water_either_date_pct": 95.64,
+  "sample_points": 22675,
+  "sample_step_m": 10.0,
+  "median_distance_to_persistent_water_m": 0.0
+ },
+ "wular": "The mapped centreline through Wular Lake is kept; the lake is not treated as the river and distances are not measured to its shore."
+}
