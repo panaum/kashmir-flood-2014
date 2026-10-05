@@ -1,0 +1,524 @@
+{
+ "script": "scripts/21_threshold_sweep.py",
+ "rules": "scripts/step5_rules.md (A)",
+ "flood_definition": "water on 2014-09-10 and not water on 2014-08-25 (MNDWI > t on both dates), pixels valid on both dates, step 3 analysis area",
+ "summary": {
+  "grid": {
+   "start": 0.0,
+   "stop": 0.3,
+   "step": 0.01,
+   "n": 31
+  },
+  "baseline": {
+   "threshold": 0.127,
+   "flooded_pixels": 418453,
+   "flooded_km2": 376.6077,
+   "flooded_pct_of_analysis_area": 10.1874,
+   "persistent_km2": 36.855,
+   "lost_km2": 0.2358,
+   "water_aug_km2": 37.0908,
+   "water_sep_km2": 413.4627
+  },
+  "grid_min": {
+   "threshold": 0.3,
+   "flooded_pixels": 366419,
+   "flooded_km2": 329.7771,
+   "flooded_pct_of_analysis_area": 8.9206,
+   "persistent_km2": 25.6185,
+   "lost_km2": 0.1476,
+   "water_aug_km2": 25.7661,
+   "water_sep_km2": 355.3956
+  },
+  "grid_max": {
+   "threshold": 0.0,
+   "flooded_pixels": 470209,
+   "flooded_km2": 423.1881,
+   "flooded_pct_of_analysis_area": 11.4474,
+   "persistent_km2": 45.0342,
+   "lost_km2": 0.4167,
+   "water_aug_km2": 45.4509,
+   "water_sep_km2": 468.2223
+  },
+  "window": {
+   "range": [
+    0.08,
+    0.17
+   ],
+   "n": 10,
+   "min_km2": 363.5973,
+   "max_km2": 392.5593,
+   "min_pct_of_baseline": 96.55,
+   "max_pct_of_baseline": 104.24
+  },
+  "largest_step_change": {
+   "from": 0.0,
+   "to": 0.01,
+   "change_km2": -4.1067
+  },
+  "step_changes": [
+   {
+    "from": 0.0,
+    "to": 0.01,
+    "change_km2": -4.1067
+   },
+   {
+    "from": 0.01,
+    "to": 0.02,
+    "change_km2": -3.8421
+   },
+   {
+    "from": 0.02,
+    "to": 0.03,
+    "change_km2": -3.9807
+   },
+   {
+    "from": 0.03,
+    "to": 0.04,
+    "change_km2": -3.8529
+   },
+   {
+    "from": 0.04,
+    "to": 0.05,
+    "change_km2": -3.9132
+   },
+   {
+    "from": 0.05,
+    "to": 0.06,
+    "change_km2": -3.7449
+   },
+   {
+    "from": 0.06,
+    "to": 0.07,
+    "change_km2": -3.5802
+   },
+   {
+    "from": 0.07,
+    "to": 0.08,
+    "change_km2": -3.6081
+   },
+   {
+    "from": 0.08,
+    "to": 0.09,
+    "change_km2": -3.4164
+   },
+   {
+    "from": 0.09,
+    "to": 0.1,
+    "change_km2": -3.5082
+   },
+   {
+    "from": 0.1,
+    "to": 0.11,
+    "change_km2": -3.3777
+   },
+   {
+    "from": 0.11,
+    "to": 0.12,
+    "change_km2": -3.3597
+   },
+   {
+    "from": 0.12,
+    "to": 0.13,
+    "change_km2": -3.1779
+   },
+   {
+    "from": 0.13,
+    "to": 0.14,
+    "change_km2": -3.1221
+   },
+   {
+    "from": 0.14,
+    "to": 0.15,
+    "change_km2": -3.0465
+   },
+   {
+    "from": 0.15,
+    "to": 0.16,
+    "change_km2": -2.9709
+   },
+   {
+    "from": 0.16,
+    "to": 0.17,
+    "change_km2": -2.9826
+   },
+   {
+    "from": 0.17,
+    "to": 0.18,
+    "change_km2": -2.9835
+   },
+   {
+    "from": 0.18,
+    "to": 0.19,
+    "change_km2": -2.9322
+   },
+   {
+    "from": 0.19,
+    "to": 0.2,
+    "change_km2": -2.6667
+   },
+   {
+    "from": 0.2,
+    "to": 0.21,
+    "change_km2": -2.691
+   },
+   {
+    "from": 0.21,
+    "to": 0.22,
+    "change_km2": -2.6964
+   },
+   {
+    "from": 0.22,
+    "to": 0.23,
+    "change_km2": -2.6379
+   },
+   {
+    "from": 0.23,
+    "to": 0.24,
+    "change_km2": -2.6676
+   },
+   {
+    "from": 0.24,
+    "to": 0.25,
+    "change_km2": -2.6316
+   },
+   {
+    "from": 0.25,
+    "to": 0.26,
+    "change_km2": -2.4651
+   },
+   {
+    "from": 0.26,
+    "to": 0.27,
+    "change_km2": -2.5083
+   },
+   {
+    "from": 0.27,
+    "to": 0.28,
+    "change_km2": -2.3634
+   },
+   {
+    "from": 0.28,
+    "to": 0.29,
+    "change_km2": -2.3013
+   },
+   {
+    "from": 0.29,
+    "to": 0.3,
+    "change_km2": -2.2752
+   }
+  ],
+  "monotonic_decreasing": true
+ },
+ "rows": [
+  {
+   "threshold": 0.0,
+   "flooded_pixels": 470209,
+   "flooded_km2": 423.1881,
+   "flooded_pct_of_analysis_area": 11.4474,
+   "persistent_km2": 45.0342,
+   "lost_km2": 0.4167,
+   "water_aug_km2": 45.4509,
+   "water_sep_km2": 468.2223
+  },
+  {
+   "threshold": 0.01,
+   "flooded_pixels": 465646,
+   "flooded_km2": 419.0814,
+   "flooded_pct_of_analysis_area": 11.3363,
+   "persistent_km2": 44.2755,
+   "lost_km2": 0.3987,
+   "water_aug_km2": 44.6742,
+   "water_sep_km2": 463.3569
+  },
+  {
+   "threshold": 0.02,
+   "flooded_pixels": 461377,
+   "flooded_km2": 415.2393,
+   "flooded_pct_of_analysis_area": 11.2324,
+   "persistent_km2": 43.5411,
+   "lost_km2": 0.3771,
+   "water_aug_km2": 43.9182,
+   "water_sep_km2": 458.7804
+  },
+  {
+   "threshold": 0.03,
+   "flooded_pixels": 456954,
+   "flooded_km2": 411.2586,
+   "flooded_pct_of_analysis_area": 11.1247,
+   "persistent_km2": 42.858,
+   "lost_km2": 0.3726,
+   "water_aug_km2": 43.2306,
+   "water_sep_km2": 454.1166
+  },
+  {
+   "threshold": 0.04,
+   "flooded_pixels": 452673,
+   "flooded_km2": 407.4057,
+   "flooded_pct_of_analysis_area": 11.0205,
+   "persistent_km2": 42.1929,
+   "lost_km2": 0.3582,
+   "water_aug_km2": 42.5511,
+   "water_sep_km2": 449.5986
+  },
+  {
+   "threshold": 0.05,
+   "flooded_pixels": 448325,
+   "flooded_km2": 403.4925,
+   "flooded_pct_of_analysis_area": 10.9147,
+   "persistent_km2": 41.5512,
+   "lost_km2": 0.3411,
+   "water_aug_km2": 41.8923,
+   "water_sep_km2": 445.0437
+  },
+  {
+   "threshold": 0.06,
+   "flooded_pixels": 444164,
+   "flooded_km2": 399.7476,
+   "flooded_pct_of_analysis_area": 10.8134,
+   "persistent_km2": 40.9077,
+   "lost_km2": 0.324,
+   "water_aug_km2": 41.2317,
+   "water_sep_km2": 440.6553
+  },
+  {
+   "threshold": 0.07,
+   "flooded_pixels": 440186,
+   "flooded_km2": 396.1674,
+   "flooded_pct_of_analysis_area": 10.7165,
+   "persistent_km2": 40.2678,
+   "lost_km2": 0.3042,
+   "water_aug_km2": 40.572,
+   "water_sep_km2": 436.4352
+  },
+  {
+   "threshold": 0.08,
+   "flooded_pixels": 436177,
+   "flooded_km2": 392.5593,
+   "flooded_pct_of_analysis_area": 10.6189,
+   "persistent_km2": 39.6585,
+   "lost_km2": 0.2916,
+   "water_aug_km2": 39.9501,
+   "water_sep_km2": 432.2178
+  },
+  {
+   "threshold": 0.09,
+   "flooded_pixels": 432381,
+   "flooded_km2": 389.1429,
+   "flooded_pct_of_analysis_area": 10.5265,
+   "persistent_km2": 39.0465,
+   "lost_km2": 0.2745,
+   "water_aug_km2": 39.321,
+   "water_sep_km2": 428.1894
+  },
+  {
+   "threshold": 0.1,
+   "flooded_pixels": 428483,
+   "flooded_km2": 385.6347,
+   "flooded_pct_of_analysis_area": 10.4316,
+   "persistent_km2": 38.4615,
+   "lost_km2": 0.2709,
+   "water_aug_km2": 38.7324,
+   "water_sep_km2": 424.0962
+  },
+  {
+   "threshold": 0.11,
+   "flooded_pixels": 424730,
+   "flooded_km2": 382.257,
+   "flooded_pct_of_analysis_area": 10.3402,
+   "persistent_km2": 37.8648,
+   "lost_km2": 0.2556,
+   "water_aug_km2": 38.1204,
+   "water_sep_km2": 420.1218
+  },
+  {
+   "threshold": 0.12,
+   "flooded_pixels": 420997,
+   "flooded_km2": 378.8973,
+   "flooded_pct_of_analysis_area": 10.2493,
+   "persistent_km2": 37.2798,
+   "lost_km2": 0.2448,
+   "water_aug_km2": 37.5246,
+   "water_sep_km2": 416.1771
+  },
+  {
+   "threshold": 0.13,
+   "flooded_pixels": 417466,
+   "flooded_km2": 375.7194,
+   "flooded_pct_of_analysis_area": 10.1634,
+   "persistent_km2": 36.6624,
+   "lost_km2": 0.2304,
+   "water_aug_km2": 36.8928,
+   "water_sep_km2": 412.3818
+  },
+  {
+   "threshold": 0.14,
+   "flooded_pixels": 413997,
+   "flooded_km2": 372.5973,
+   "flooded_pct_of_analysis_area": 10.0789,
+   "persistent_km2": 36.0009,
+   "lost_km2": 0.2259,
+   "water_aug_km2": 36.2268,
+   "water_sep_km2": 408.5982
+  },
+  {
+   "threshold": 0.15,
+   "flooded_pixels": 410612,
+   "flooded_km2": 369.5508,
+   "flooded_pct_of_analysis_area": 9.9965,
+   "persistent_km2": 35.3556,
+   "lost_km2": 0.2223,
+   "water_aug_km2": 35.5779,
+   "water_sep_km2": 404.9064
+  },
+  {
+   "threshold": 0.16,
+   "flooded_pixels": 407311,
+   "flooded_km2": 366.5799,
+   "flooded_pct_of_analysis_area": 9.9162,
+   "persistent_km2": 34.677,
+   "lost_km2": 0.2232,
+   "water_aug_km2": 34.9002,
+   "water_sep_km2": 401.2569
+  },
+  {
+   "threshold": 0.17,
+   "flooded_pixels": 403997,
+   "flooded_km2": 363.5973,
+   "flooded_pct_of_analysis_area": 9.8355,
+   "persistent_km2": 34.0677,
+   "lost_km2": 0.2133,
+   "water_aug_km2": 34.281,
+   "water_sep_km2": 397.665
+  },
+  {
+   "threshold": 0.18,
+   "flooded_pixels": 400682,
+   "flooded_km2": 360.6138,
+   "flooded_pct_of_analysis_area": 9.7548,
+   "persistent_km2": 33.4296,
+   "lost_km2": 0.2043,
+   "water_aug_km2": 33.6339,
+   "water_sep_km2": 394.0434
+  },
+  {
+   "threshold": 0.19,
+   "flooded_pixels": 397424,
+   "flooded_km2": 357.6816,
+   "flooded_pct_of_analysis_area": 9.6755,
+   "persistent_km2": 32.7978,
+   "lost_km2": 0.1935,
+   "water_aug_km2": 32.9913,
+   "water_sep_km2": 390.4794
+  },
+  {
+   "threshold": 0.2,
+   "flooded_pixels": 394461,
+   "flooded_km2": 355.0149,
+   "flooded_pct_of_analysis_area": 9.6033,
+   "persistent_km2": 32.1138,
+   "lost_km2": 0.1818,
+   "water_aug_km2": 32.2956,
+   "water_sep_km2": 387.1287
+  },
+  {
+   "threshold": 0.21,
+   "flooded_pixels": 391471,
+   "flooded_km2": 352.3239,
+   "flooded_pct_of_analysis_area": 9.5305,
+   "persistent_km2": 31.4784,
+   "lost_km2": 0.171,
+   "water_aug_km2": 31.6494,
+   "water_sep_km2": 383.8023
+  },
+  {
+   "threshold": 0.22,
+   "flooded_pixels": 388475,
+   "flooded_km2": 349.6275,
+   "flooded_pct_of_analysis_area": 9.4576,
+   "persistent_km2": 30.8457,
+   "lost_km2": 0.1692,
+   "water_aug_km2": 31.0149,
+   "water_sep_km2": 380.4732
+  },
+  {
+   "threshold": 0.23,
+   "flooded_pixels": 385544,
+   "flooded_km2": 346.9896,
+   "flooded_pct_of_analysis_area": 9.3862,
+   "persistent_km2": 30.2103,
+   "lost_km2": 0.1683,
+   "water_aug_km2": 30.3786,
+   "water_sep_km2": 377.1999
+  },
+  {
+   "threshold": 0.24,
+   "flooded_pixels": 382580,
+   "flooded_km2": 344.322,
+   "flooded_pct_of_analysis_area": 9.3141,
+   "persistent_km2": 29.6208,
+   "lost_km2": 0.1674,
+   "water_aug_km2": 29.7882,
+   "water_sep_km2": 373.9428
+  },
+  {
+   "threshold": 0.25,
+   "flooded_pixels": 379656,
+   "flooded_km2": 341.6904,
+   "flooded_pct_of_analysis_area": 9.2429,
+   "persistent_km2": 29.016,
+   "lost_km2": 0.1611,
+   "water_aug_km2": 29.1771,
+   "water_sep_km2": 370.7064
+  },
+  {
+   "threshold": 0.26,
+   "flooded_pixels": 376917,
+   "flooded_km2": 339.2253,
+   "flooded_pct_of_analysis_area": 9.1762,
+   "persistent_km2": 28.3518,
+   "lost_km2": 0.1593,
+   "water_aug_km2": 28.5111,
+   "water_sep_km2": 367.5771
+  },
+  {
+   "threshold": 0.27,
+   "flooded_pixels": 374130,
+   "flooded_km2": 336.717,
+   "flooded_pct_of_analysis_area": 9.1084,
+   "persistent_km2": 27.702,
+   "lost_km2": 0.1566,
+   "water_aug_km2": 27.8586,
+   "water_sep_km2": 364.419
+  },
+  {
+   "threshold": 0.28,
+   "flooded_pixels": 371504,
+   "flooded_km2": 334.3536,
+   "flooded_pct_of_analysis_area": 9.0444,
+   "persistent_km2": 27.0441,
+   "lost_km2": 0.1512,
+   "water_aug_km2": 27.1953,
+   "water_sep_km2": 361.3977
+  },
+  {
+   "threshold": 0.29,
+   "flooded_pixels": 368947,
+   "flooded_km2": 332.0523,
+   "flooded_pct_of_analysis_area": 8.9822,
+   "persistent_km2": 26.3475,
+   "lost_km2": 0.153,
+   "water_aug_km2": 26.5005,
+   "water_sep_km2": 358.3998
+  },
+  {
+   "threshold": 0.3,
+   "flooded_pixels": 366419,
+   "flooded_km2": 329.7771,
+   "flooded_pct_of_analysis_area": 8.9206,
+   "persistent_km2": 25.6185,
+   "lost_km2": 0.1476,
+   "water_aug_km2": 25.7661,
+   "water_sep_km2": 355.3956
+  }
+ ]
+}
