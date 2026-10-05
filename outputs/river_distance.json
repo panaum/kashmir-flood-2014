@@ -1,0 +1,260 @@
+{
+ "script": "scripts/24_river_distance.py",
+ "rules": "scripts/step6_rules.md (J5, D)",
+ "band_edges_m": [
+  0,
+  250,
+  500,
+  1000,
+  2000,
+  3000,
+  5000,
+  7500,
+  10000,
+  15000
+ ],
+ "distance_raster": {
+  "file": "data/river/jhelum_distance_m.tif",
+  "flag_raster": "data/river/jhelum_distance_flag.tif",
+  "crs": "EPSG:32643",
+  "units": "metres",
+  "pixel_m": 30.0,
+  "shape": [
+   4077,
+   3716
+  ],
+  "nodata": -9999.0,
+  "padding_m": 20010.0,
+  "max_error_m": 21.2,
+  "source": "outputs/jhelum_centreline.geojson",
+  "osm_timestamp": "2026-10-01T20:22:06Z"
+ },
+ "j5_missing_members_check": {
+  "rule": "J5 as amended (amendment 1)",
+  "boundary_affected_pixels": 90526,
+  "boundary_affected_km2": 81.4734,
+  "pixels_whose_range_crosses_a_band_edge": 0,
+  "lower_bound_m_range": [
+   19108.3,
+   30213.0
+  ],
+  "upper_bound_m_range": [
+   26202.8,
+   37616.1
+  ],
+  "bands_of_affected_pixels": [
+   15000
+  ]
+ },
+ "boundary_affected": {
+  "note": "Exact river distances of these pixels are uncertain: the extract does not cover all downstream river geometry. They are assigned to a band only because their whole possible range lies in it, and they are excluded from the exact-distance statistics.",
+  "assessed_km2": 81.3762,
+  "flooded_km2": 0.2772,
+  "not_assessed_km2": 0.0972,
+  "distance_lower_bound_m": {
+   "min": 19108.3,
+   "max": 30213.0
+  },
+  "distance_upper_bound_m": {
+   "min": 26202.8,
+   "max": 37616.1
+  }
+ },
+ "caveats": [
+  "Euclidean distance to the mapped centreline, not hydrological distance.",
+  "Pixels inside Wular Lake get their distance to the centreline through the lake, not to the lake shore.",
+  "The centreline is today's OpenStreetMap (snapshot above), not the 2014 channel.",
+  "Descriptive only: distance and elevation are spatially related; no causal claim and no regression."
+ ],
+ "distance_flooded_exact_only": {
+  "pixels": 418145,
+  "min_m": 0.0,
+  "max_m": 29529.2,
+  "mean_m": 2902.0,
+  "median_m": 2207.8,
+  "std_m": 2606.0,
+  "p1_m": 30.0,
+  "p5_m": 192.1,
+  "p10_m": 394.6,
+  "p25_m": 1008.0,
+  "p75_m": 4105.5,
+  "p90_m": 6556.9,
+  "p95_m": 7749.4,
+  "p99_m": 9659.1
+ },
+ "distance_assessed_exact_only": {
+  "pixels": 4016517,
+  "min_m": 0.0,
+  "max_m": 30222.7,
+  "mean_m": 7381.4,
+  "median_m": 5982.7,
+  "std_m": 6029.7,
+  "p1_m": 67.1,
+  "p5_m": 402.5,
+  "p10_m": 865.3,
+  "p25_m": 2520.7,
+  "p75_m": 10980.4,
+  "p90_m": 15351.5,
+  "p95_m": 19395.8,
+  "p99_m": 26250.4
+ },
+ "exact_only_note": "Statistics exclude boundary-affected pixels, whose exact distance is not known.",
+ "bands": [
+  {
+   "band": "0-250 m",
+   "lower_m": 0,
+   "upper_m": 250,
+   "analysis_area_pixels": 129370,
+   "assessed_pixels": 129370,
+   "assessed_km2": 116.433,
+   "not_assessed_km2": 0.0,
+   "flooded_pixels": 26160,
+   "flooded_km2": 23.544,
+   "flood_fraction_pct": 20.221,
+   "share_of_all_flooded_pct": 6.252,
+   "persistent_water_km2": 17.7039,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "250-500 m",
+   "lower_m": 250,
+   "upper_m": 500,
+   "analysis_area_pixels": 116688,
+   "assessed_pixels": 116688,
+   "assessed_km2": 105.0192,
+   "not_assessed_km2": 0.0,
+   "flooded_pixels": 26806,
+   "flooded_km2": 24.1254,
+   "flood_fraction_pct": 22.972,
+   "share_of_all_flooded_pct": 6.406,
+   "persistent_water_km2": 3.0888,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "500-1,000 m",
+   "lower_m": 500,
+   "upper_m": 1000,
+   "analysis_area_pixels": 211956,
+   "assessed_pixels": 211956,
+   "assessed_km2": 190.7604,
+   "not_assessed_km2": 0.0,
+   "flooded_pixels": 50990,
+   "flooded_km2": 45.891,
+   "flood_fraction_pct": 24.057,
+   "share_of_all_flooded_pct": 12.185,
+   "persistent_water_km2": 2.898,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "1,000-2,000 m",
+   "lower_m": 1000,
+   "upper_m": 2000,
+   "analysis_area_pixels": 369666,
+   "assessed_pixels": 369665,
+   "assessed_km2": 332.6985,
+   "not_assessed_km2": 0.0009,
+   "flooded_pixels": 88635,
+   "flooded_km2": 79.7715,
+   "flood_fraction_pct": 23.977,
+   "share_of_all_flooded_pct": 21.182,
+   "persistent_water_km2": 1.8342,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "2,000-3,000 m",
+   "lower_m": 2000,
+   "upper_m": 3000,
+   "analysis_area_pixels": 333859,
+   "assessed_pixels": 333859,
+   "assessed_km2": 300.4731,
+   "not_assessed_km2": 0.0,
+   "flooded_pixels": 72242,
+   "flooded_km2": 65.0178,
+   "flood_fraction_pct": 21.638,
+   "share_of_all_flooded_pct": 17.264,
+   "persistent_water_km2": 2.0547,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "3,000-5,000 m",
+   "lower_m": 3000,
+   "upper_m": 5000,
+   "analysis_area_pixels": 595831,
+   "assessed_pixels": 595830,
+   "assessed_km2": 536.247,
+   "not_assessed_km2": 0.0009,
+   "flooded_pixels": 77322,
+   "flooded_km2": 69.5898,
+   "flood_fraction_pct": 12.977,
+   "share_of_all_flooded_pct": 18.478,
+   "persistent_water_km2": 3.5181,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "5,000-7,500 m",
+   "lower_m": 5000,
+   "upper_m": 7500,
+   "analysis_area_pixels": 596621,
+   "assessed_pixels": 596621,
+   "assessed_km2": 536.9589,
+   "not_assessed_km2": 0.0,
+   "flooded_pixels": 51263,
+   "flooded_km2": 46.1367,
+   "flood_fraction_pct": 8.592,
+   "share_of_all_flooded_pct": 12.251,
+   "persistent_water_km2": 4.4478,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "7,500-10,000 m",
+   "lower_m": 7500,
+   "upper_m": 10000,
+   "analysis_area_pixels": 487436,
+   "assessed_pixels": 487432,
+   "assessed_km2": 438.6888,
+   "not_assessed_km2": 0.0036,
+   "flooded_pixels": 21023,
+   "flooded_km2": 18.9207,
+   "flood_fraction_pct": 4.313,
+   "share_of_all_flooded_pct": 5.024,
+   "persistent_water_km2": 0.5076,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": "10,000-15,000 m",
+   "lower_m": 10000,
+   "upper_m": 15000,
+   "analysis_area_pixels": 740178,
+   "assessed_pixels": 739914,
+   "assessed_km2": 665.9226,
+   "not_assessed_km2": 0.2376,
+   "flooded_pixels": 1976,
+   "flooded_km2": 1.7784,
+   "flood_fraction_pct": 0.267,
+   "share_of_all_flooded_pct": 0.472,
+   "persistent_water_km2": 0.3177,
+   "boundary_affected_km2": 0.0
+  },
+  {
+   "band": ">= 15,000 m",
+   "lower_m": 15000,
+   "upper_m": null,
+   "analysis_area_pixels": 525944,
+   "assessed_pixels": 525600,
+   "assessed_km2": 473.04,
+   "not_assessed_km2": 0.3096,
+   "flooded_pixels": 2036,
+   "flooded_km2": 1.8324,
+   "flood_fraction_pct": 0.387,
+   "share_of_all_flooded_pct": 0.487,
+   "persistent_water_km2": 0.4842,
+   "boundary_affected_km2": 81.4734
+  }
+ ],
+ "totals": {
+  "analysis_area_pixels": 4107549,
+  "assessed_pixels": 4106935,
+  "flooded_pixels": 418453,
+  "flooded_km2": 376.6077
+ }
+}
