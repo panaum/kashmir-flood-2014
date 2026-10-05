@@ -49,10 +49,13 @@ VAL = ROOT / "data" / "validation"
 DESIGNS = {
     "v1": {"seed": 20140910, "per_stratum": 56, "prefix": "V", "key": VAL / "key.csv",
            "lab": VAL / "labelling", "out": ROOT / "outputs" / "validation",
-           "rule_text": ["default_rng(20140910)", "56 samples per stratum"]},
+           "rule_text": ["default_rng(20140910)", "56 samples per stratum"],
+           "page": "validation_page.html", "stretch": "valley", "readme": "v1"},
     "v2": {"seed": 20140825, "per_stratum": 20, "prefix": "W", "key": VAL / "v2" / "key.csv",
            "lab": VAL / "labelling_v2", "out": ROOT / "outputs" / "validation" / "v2",
-           "rule_text": ["default_rng(20140825)", "20 samples per stratum (140 in total, design"]},
+           "rule_text": ["default_rng(20140825)", "20 samples per stratum (140 in total, design",
+                         "Amendment 4: fresh blind validation on the W sample"],
+           "page": "validation_page_w.html", "stretch": "per_sample", "readme": "w"},
 }
 MIN_SPACING_M = 300.0                 # P2
 EDGE_M = 500.0                        # S6
@@ -105,6 +108,24 @@ def chip(bands, lims, r, c, size):
         v = np.clip((b[r0:r1, c0:c1].astype(np.float32) - lo) / (hi - lo), 0, 1)
         out[r0 - (r - h):r1 - (r - h), c0 - (c - h):c1 - (c - h), k] = (v * 255).round().astype(np.uint8)
     return Image.fromarray(out)
+
+
+def per_sample_limits(bands_qa, r, c):
+    """Amendment 4: per band, 2nd-98th percentile over the 201 x 201 context
+    window, both dates pooled, valid pixels only (DN != 0, QA fill bit 0)."""
+    h = CONTEXT // 2
+    lims = {}
+    for b in ("swir1", "nir", "red", "green"):
+        vals = []
+        for lab in DATES:
+            band, qa = bands_qa[(lab, b)], bands_qa[(lab, "qa_pixel")]
+            H, W = band.shape
+            win = (slice(max(r - h, 0), min(r + h + 1, H)), slice(max(c - h, 0), min(c + h + 1, W)))
+            v, q = band[win], qa[win]
+            vals.append(v[(v != 0) & ((q & 1) == 0)].astype(np.float64))
+        v = np.concatenate(vals)
+        lims[b] = [float(x) for x in np.percentile(v, [2, 98])] if v.size else None
+    return lims
 
 
 def visible_text(html):
@@ -207,14 +228,20 @@ def main():
         if [round(v, 6) for v in lims[b]] != [round(v, 6) for v in step1[b]]:
             stop(f"{b} stretch differs from step 1")
     bands = {(lab, b): rasterio.open(CLIP / f"{lab}_{d}_{b}.tif").read(1)
-             for lab, d in DATES.items() for b in ("swir1", "nir", "red", "green")}
+             for lab, d in DATES.items() for b in ("swir1", "nir", "red", "green", "qa_pixel")}
+    chip_limits = {}
     tag = {"pre": "aug", "flood": "sep"}
     for s in samples:
+        use = lims
+        if D["stretch"] == "per_sample":
+            ps = per_sample_limits(bands, s["row"], s["col"])
+            use = {b: (ps[b] if ps[b] is not None and ps[b][1] - ps[b][0] >= 1 else lims[b]) for b in lims}
+            chip_limits[s["id"]] = {b: {"limits": use[b], "fallback_to_valley": use[b] is lims[b]} for b in use}
         for lab in DATES:
             swir = [bands[(lab, b)] for b in ("swir1", "nir", "red")]
             cir = [bands[(lab, b)] for b in ("nir", "red", "green")]
-            l_swir = [lims[b] for b in ("swir1", "nir", "red")]
-            l_cir = [lims[b] for b in ("nir", "red", "green")]
+            l_swir = [use[b] for b in ("swir1", "nir", "red")]
+            l_cir = [use[b] for b in ("nir", "red", "green")]
             chip(swir, l_swir, s["row"], s["col"], DETAIL).save(LAB / "chips" / f"{s['id']}_{tag[lab]}_a.png")
             chip(cir, l_cir, s["row"], s["col"], DETAIL).save(LAB / "chips" / f"{s['id']}_{tag[lab]}_b.png")
             chip(swir, l_swir, s["row"], s["col"], CONTEXT).save(LAB / "chips" / f"{s['id']}_{tag[lab]}_c.png")
@@ -238,8 +265,10 @@ def main():
             w.writerow([b["id"], b["lat"], b["lon"]])
     (OUT / "key_sha256.txt").write_text(f"{key_sha}  {key_path.relative_to(ROOT)}\n")
 
-    shutil.copy(Path(__file__).parent / "validation_page.html", LAB / "index.html")
-    (LAB / "README.txt").write_text(
+    shutil.copy(Path(__file__).parent / D["page"], LAB / "index.html")
+    if chip_limits:
+        (VAL / "v2" / "chip_limits.json").write_text(json.dumps(chip_limits, indent=1))
+    readme_v1 = (
         "Water labelling, Landsat 8, 25 August 2014 and 10 September 2014\n\n"
         "Open index.html in a web browser. It works offline from this folder.\n"
         "For each sample, look at the centre pixel (outlined) on each date and record whether it is\n"
@@ -249,6 +278,27 @@ def main():
         "Chips: a = shortwave infrared / near infrared / red; b = near infrared / red / green;\n"
         "c = wider view (6 km) in shortwave infrared / near infrared / red. 30 m pixels.\n"
         "Do not consult any project map or result while labelling.\n")
+    readme_w = (
+        "Open-water labelling: W sample (W001 to W140)\n"
+        "Landsat 8, 25 August 2014 and 10 September 2014\n\n"
+        "Open index.html in a web browser. It works offline from this folder and keeps its answers separately\n"
+        "from any other labelling page. Use 'Download CSV' (it saves labels_W.csv) and 'Load CSV' to continue.\n\n"
+        "For each sample and each date, answer about the exact centre pixel (the outlined 30 m square):\n"
+        "is there open surface water visible at the exact centre of the marked 30 m pixel in this date's image?\n"
+        "  yes          open surface water is visible at the centre pixel itself\n"
+        "  no           the centre pixel is clearly not open water\n"
+        "  cannot tell  open water cannot be confidently distinguished at the centre pixel; use this rather than guessing\n\n"
+        "Do not answer 'yes' for: dark vegetation; crops or fields that merely appear dark; wet or waterlogged soil\n"
+        "without visible open water; shadows (terrain or cloud); surfaces that are just generally dark; water you\n"
+        "infer only from the surrounding pixels.\n\n"
+        "Surface seen: record what is at the centre pixel. 'Water with vegetation' is a separate description; a\n"
+        "vegetation-covered or ambiguous surface is not open water just because it looks wet. If you cannot tell\n"
+        "whether open water is present, answer 'cannot tell'.\n\n"
+        "Chips: a = shortwave infrared / near infrared / red (open water very dark blue to black);\n"
+        "b = near infrared / red / green (open water very dark, vegetation red); c = wider view (6 km).\n"
+        "Colours are scaled per sample, the same for both dates. One image pixel = 30 m.\n"
+        "Judge from these images only. Do not consult any project map, result, earlier label or other sample set.\n")
+    (LAB / "README.txt").write_text(readme_w if D["readme"] == "w" else readme_v1)
 
     # B3: blinding check on everything in the labelling folder.
     found = []

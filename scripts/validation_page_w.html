@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open-water labelling: W sample (W001 to W140)</title>
+<style>
+  :root { --bg: #F3ECDF; --ink: #3A2A1F; --soft: #5C4636; --accent: #1F5E59; --rule: #CDBFA9; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header, main, footer { max-width: 1180px; margin: 0 auto; padding: 1rem 1.25rem; }
+  h1 { font-size: 1.35rem; margin: .2rem 0 .4rem; }
+  .bar { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  button, input[type=text], select { font: inherit; }
+  button { border: 1px solid var(--accent); background: transparent; color: var(--accent); padding: .35rem .8rem; cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--bg); }
+  .meta { color: var(--soft); }
+  .dates { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+  .date h2 { font-size: 1.1rem; margin: 0 0 .5rem; border-bottom: 1px solid var(--rule); padding-bottom: .3rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .6rem; }
+  figure { margin: 0; }
+  figcaption { font-size: .8rem; color: var(--soft); }
+  .frame { position: relative; display: inline-block; line-height: 0; border: 1px solid var(--rule); }
+  .frame img { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+  .detail img { width: 255px; height: 255px; }
+  .context img { width: 402px; height: 402px; }
+  .box { position: absolute; border: 2px solid #fff; outline: 1px solid #000; pointer-events: none; }
+  fieldset { border: 0; padding: 0; margin: .7rem 0 0; }
+  legend { font-weight: 600; margin-bottom: .2rem; }
+  label.opt { margin-right: 1rem; white-space: nowrap; }
+  .row { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; }
+  input[type=text] { width: 100%; padding: .3rem; border: 1px solid var(--rule); background: #fff; }
+  .done { color: var(--accent); font-weight: 600; }
+  .protocol { border-left: 3px solid var(--accent); padding: .2rem 1rem; margin: .6rem 0 1rem; background: #EBE2D1; }
+  .protocol ul { margin: .3rem 0 .6rem; }
+  @media (max-width: 900px) { .dates, .row { grid-template-columns: 1fr; } .context img { width: 300px; height: 300px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Open-water labelling: W sample (W001 to W140)</h1>
+  <p class="meta">Landsat 8, 25 August 2014 and 10 September 2014.</p>
+  <div class="protocol">
+    <p>For each sample and each date, answer one question about the <strong>exact centre pixel</strong>
+      (the outlined 30 m square): <strong>is there open surface water visible at the exact centre of the
+      marked 30 m pixel in this date's image?</strong></p>
+    <ul>
+      <li><strong>yes</strong>: open surface water is visible at the centre pixel itself.</li>
+      <li><strong>no</strong>: the centre pixel is clearly not open water.</li>
+      <li><strong>cannot tell</strong>: open water cannot be confidently distinguished at the centre pixel.
+        Use this rather than guessing.</li>
+    </ul>
+    <p>Do not answer "yes" for: dark vegetation; crops or fields that merely appear dark; wet or waterlogged
+      soil without visible open water; shadows (terrain or cloud); surfaces that are just generally dark;
+      water you infer only from the surrounding pixels.</p>
+    <p>Surface seen: record what is at the centre pixel. "Water with vegetation" is a separate description;
+      a vegetation-covered or ambiguous surface is not open water just because it looks wet. If you cannot
+      tell whether open water is present, answer "cannot tell".</p>
+    <p>Judge from these images only. Do not consult any project map, result, earlier label or other sample
+      set while labelling.</p>
+  </div>
+  <div class="bar">
+    <button type="button" id="prev">Previous</button>
+    <button type="button" id="next" class="primary">Next</button>
+    <button type="button" id="nextEmpty">Next unanswered</button>
+    <label>Go to <input type="text" id="goto" size="6" aria-label="Sample id"></label>
+    <span id="progress" class="meta" aria-live="polite"></span>
+    <button type="button" id="download">Download CSV</button>
+    <label class="meta">Load CSV <input type="file" id="load" accept=".csv"></label>
+  </div>
+</header>
+<main>
+  <p><strong id="sid"></strong> <span id="coords" class="meta"></span> <span id="status"></span></p>
+  <div class="dates">
+    <section class="date" data-date="aug"><h2>25 August 2014</h2></section>
+    <section class="date" data-date="sep"><h2>10 September 2014</h2></section>
+  </div>
+  <div class="row">
+    <fieldset><legend>Confidence (overall)</legend>
+      <label class="opt"><input type="radio" name="confidence" value="high"> high</label>
+      <label class="opt"><input type="radio" name="confidence" value="medium"> medium</label>
+      <label class="opt"><input type="radio" name="confidence" value="low"> low</label>
+    </fieldset>
+    <label>Other source used (and its date), if any<input type="text" id="other_source"></label>
+    <label>Notes<input type="text" id="notes"></label>
+  </div>
+</main>
+<footer class="meta">Chips a: shortwave infrared / near infrared / red; open water is very dark blue to black.
+  Chips b: near infrared / red / green; open water is very dark and vegetation is red. Chips c: wider view, 6 km.
+  One image pixel = 30 m. Colours are scaled per sample, the same for both dates. The page works offline; answers
+  are kept in this browser, separately from any other labelling page, until you download them as labels_W.csv.</footer>
+
+<script src="samples.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.SAMPLES || [];
+  var KEY = "open-water-labels-W-sample-amendment4";
+  var SURF = ["open water", "water with vegetation", "built-up", "crops or grass", "trees",
+              "bare soil", "wetland or marsh", "cloud or shadow"];
+  var WATER = ["yes", "no", "cannot tell"];
+  var COLS = ["sample_id", "lat", "lon", "aug_water", "aug_surface", "sep_water", "sep_surface",
+              "confidence", "other_source", "notes"];
+  var labels = {};
+  try { labels = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { labels = {}; }
+  var i = 0;
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(labels)); } catch (e) {} }
+  function rec(id) { return labels[id] || (labels[id] = {}); }
+
+  function frame(src, cls, n, alt) {
+    var f = document.createElement("figure");
+    var d = document.createElement("div");
+    d.className = "frame " + cls;
+    var img = document.createElement("img");
+    img.src = src; img.alt = alt;
+    d.appendChild(img);
+    var b = document.createElement("div");
+    b.className = "box";
+    var c = Math.floor(n / 2);
+    b.style.left = (100 * c / n) + "%"; b.style.top = (100 * c / n) + "%";
+    b.style.width = (100 / n) + "%"; b.style.height = (100 / n) + "%";
+    d.appendChild(b);
+    f.appendChild(d);
+    return f;
+  }
+
+  function dateBlock(sec, id, tag) {
+    sec.querySelectorAll(":scope > :not(h2)").forEach(function (e) { e.remove(); });
+    var chips = document.createElement("div");
+    chips.className = "chips";
+    var fa = frame("chips/" + id + "_" + tag + "_a.png", "detail", 51, "detail view, shortwave infrared composite");
+    var cap = document.createElement("figcaption"); cap.textContent = "a"; fa.appendChild(cap);
+    var fb = frame("chips/" + id + "_" + tag + "_b.png", "detail", 51, "detail view, near infrared composite");
+    cap = document.createElement("figcaption"); cap.textContent = "b"; fb.appendChild(cap);
+    var fc = frame("chips/" + id + "_" + tag + "_c.png", "context", 201, "wider view, shortwave infrared composite");
+    cap = document.createElement("figcaption"); cap.textContent = "c (wider view)"; fc.appendChild(cap);
+    chips.appendChild(fa); chips.appendChild(fb); chips.appendChild(fc);
+    sec.appendChild(chips);
+    var r = rec(id);
+    var fs = document.createElement("fieldset");
+    var lg = document.createElement("legend"); lg.textContent = "Open surface water at the exact centre pixel?"; fs.appendChild(lg);
+    WATER.forEach(function (v) {
+      var l = document.createElement("label"); l.className = "opt";
+      var inp = document.createElement("input"); inp.type = "radio"; inp.name = tag + "_water"; inp.value = v;
+      inp.checked = r[tag + "_water"] === v;
+      inp.addEventListener("change", function () { r[tag + "_water"] = v; save(); status(); });
+      l.appendChild(inp); l.appendChild(document.createTextNode(" " + v)); fs.appendChild(l);
+    });
+    sec.appendChild(fs);
+    var sl = document.createElement("label");
+    sl.textContent = "Surface seen ";
+    var sel = document.createElement("select");
+    var o0 = document.createElement("option"); o0.value = ""; o0.textContent = "(choose)"; sel.appendChild(o0);
+    SURF.forEach(function (v) { var o = document.createElement("option"); o.value = v; o.textContent = v; sel.appendChild(o); });
+    sel.value = r[tag + "_surface"] || "";
+    sel.addEventListener("change", function () { r[tag + "_surface"] = sel.value; save(); status(); });
+    sl.appendChild(sel);
+    sec.appendChild(sl);
+  }
+
+  function complete(r) { return r && r.aug_water && r.sep_water && r.confidence; }
+  function status() {
+    var r = labels[S[i].id];
+    var st = document.getElementById("status");
+    st.textContent = complete(r) ? "answered" : "";
+    st.style.color = "#1F5E59"; st.style.fontWeight = "600";
+    var n = S.filter(function (s) { return complete(labels[s.id]); }).length;
+    document.getElementById("progress").textContent = n + " of " + S.length + " answered";
+  }
+
+  function show() {
+    var s = S[i];
+    document.getElementById("sid").textContent = s.id;
+    document.getElementById("coords").textContent = s.lat.toFixed(5) + " N, " + s.lon.toFixed(5) + " E";
+    document.querySelectorAll(".date").forEach(function (sec) { dateBlock(sec, s.id, sec.getAttribute("data-date")); });
+    var r = rec(s.id);
+    document.querySelectorAll("input[name=confidence]").forEach(function (inp) { inp.checked = r.confidence === inp.value; });
+    document.getElementById("other_source").value = r.other_source || "";
+    document.getElementById("notes").value = r.notes || "";
+    status();
+  }
+
+  document.querySelectorAll("input[name=confidence]").forEach(function (inp) {
+    inp.addEventListener("change", function () { rec(S[i].id).confidence = inp.value; save(); status(); });
+  });
+  ["other_source", "notes"].forEach(function (k) {
+    document.getElementById(k).addEventListener("input", function (e) { rec(S[i].id)[k] = e.target.value; save(); });
+  });
+  document.getElementById("prev").addEventListener("click", function () { i = (i - 1 + S.length) % S.length; show(); });
+  document.getElementById("next").addEventListener("click", function () { i = (i + 1) % S.length; show(); });
+  document.getElementById("nextEmpty").addEventListener("click", function () {
+    for (var k = 1; k <= S.length; k++) { var j = (i + k) % S.length; if (!complete(labels[S[j].id])) { i = j; show(); return; } }
+  });
+  document.getElementById("goto").addEventListener("change", function (e) {
+    var v = e.target.value.trim().toUpperCase();
+    var j = S.findIndex(function (s) { return s.id === v; });
+    if (j >= 0) { i = j; show(); }
+  });
+
+  function csvCell(v) { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  document.getElementById("download").addEventListener("click", function () {
+    var lines = [COLS.join(",")];
+    S.forEach(function (s) {
+      var r = labels[s.id] || {};
+      lines.push([s.id, s.lat, s.lon, r.aug_water, r.aug_surface, r.sep_water, r.sep_surface,
+                  r.confidence, r.other_source, r.notes].map(csvCell).join(","));
+    });
+    var blob = new Blob([lines.join("\n") + "\n"], { type: "text/csv" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "labels_W.csv"; a.click();
+  });
+
+  function parseCSV(text) {
+    var rows = [], row = [], cell = "", q = false;
+    for (var k = 0; k < text.length; k++) {
+      var ch = text[k];
+      if (q) { if (ch === '"') { if (text[k + 1] === '"') { cell += '"'; k++; } else q = false; } else cell += ch; }
+      else if (ch === '"') q = true;
+      else if (ch === ",") { row.push(cell); cell = ""; }
+      else if (ch === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+      else if (ch !== "\r") cell += ch;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  document.getElementById("load").addEventListener("change", function (e) {
+    var f = e.target.files[0]; if (!f) return;
+    f.text().then(function (t) {
+      var rows = parseCSV(t), head = rows.shift();
+      var bad = rows.filter(function (r) { return r[0] && !/^W\d{3}$/.test(r[0]); });
+      if (bad.length) { alert("This file is not for the W sample (found id " + bad[0][0] + "). Nothing was loaded."); return; }
+      rows.forEach(function (r) {
+        var o = {}; head.forEach(function (h, k) { o[h] = r[k]; });
+        if (!o.sample_id) return;
+        labels[o.sample_id] = { aug_water: o.aug_water, aug_surface: o.aug_surface, sep_water: o.sep_water,
+                                sep_surface: o.sep_surface, confidence: o.confidence,
+                                other_source: o.other_source, notes: o.notes };
+      });
+      save(); show();
+    });
+  });
+
+  if (S.length) show();
+})();
+</script>
+</body>
+</html>
