@@ -118,3 +118,32 @@ and not water on 25 August.
   for S1, S4 and S5.
 - M6. Low-confidence labels are kept in the primary metrics; the metrics are
   also reported without them as a sensitivity.
+
+**Amendment 1: sample design v2 (committed before the v2 sample was drawn)**
+
+- Change: the validation sample is reduced from 56 samples per stratum (392
+  in total, design v1) to **20 samples per stratum (140 in total, design
+  v2)**.
+- Reason: the v1 sample (drawn in commit `0dc1aea` under the rules of commit
+  `cd73ad0`) has not been labelled and has not been used for any metric. A
+  140-point sample still represents all seven strata. It is treated as a
+  smaller validation and diagnostic sample. **It does not give the same
+  statistical precision as 392 samples**: with 20 samples per stratum,
+  standard errors and confidence intervals will be wider, and per-stratum
+  results will rest on 20 observations each.
+- The v1 sample and its material stay in the git history and on disk
+  unchanged. They will not be labelled or used for any validation result, so
+  that results cannot be chosen between the two designs.
+- Unchanged: the seven strata S1 to S7 and their order and definitions,
+  including the present-day built-up proxy (used only for stratification,
+  never as a reference label); random order within each stratum; the 300 m
+  minimum spacing; never sampling not-assessed pixels; the hidden answer key
+  with a committed checksum; the blinding rules B1 to B4; the label fields
+  (L); cannot-tell handling (C); and the metrics and estimators (M), applied
+  with n_h = 20.
+- v2 random generator: `numpy.random.default_rng(20140825)`, a new seed; the
+  v1 sample and seed (20140910) are not reused. Samples are numbered W001 to
+  W140, so they cannot be confused with v1 ids (V001 to V392).
+- v2 paths: hidden key `data/validation/v2/key.csv` (not committed);
+  labelling material `data/validation/labelling_v2/` (not committed); blind
+  sample list, labels template and key checksum in `outputs/validation/v2/`.
