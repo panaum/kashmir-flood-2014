@@ -69,6 +69,28 @@ SURFACES = ["open water", "water with vegetation", "built-up", "crops or grass",
             "bare soil", "wetland or marsh", "cloud or shadow"]
 
 
+README_W = (
+    "Open-water labelling: W sample (W001 to W140)\n"
+    "Landsat 8, 25 August 2014 and 10 September 2014\n\n"
+    "Open index.html in a web browser. It works offline from this folder and keeps its answers separately\n"
+    "from any other labelling page. Use 'Download CSV' (it saves labels_W.csv) and 'Load CSV' to continue.\n\n"
+    "For each sample and each date, answer about the exact centre pixel (the outlined 30 m square):\n"
+    "is there open surface water visible at the exact centre of the marked 30 m pixel in this date's image?\n"
+    "  yes          open surface water is visible at the centre pixel itself\n"
+    "  no           the centre pixel is clearly not open water\n"
+    "  cannot tell  open water cannot be confidently distinguished at the centre pixel; use this rather than guessing\n\n"
+    "Do not answer 'yes' for: dark vegetation; crops or fields that merely appear dark; wet or waterlogged soil\n"
+    "without visible open water; shadows (terrain or cloud); surfaces that are just generally dark; water you\n"
+    "infer only from the surrounding pixels.\n\n"
+    "Surface seen: record what is at the centre pixel. 'Water with vegetation' is a separate description; a\n"
+    "vegetation-covered or ambiguous surface is not open water just because it looks wet. If you cannot tell\n"
+    "whether open water is present, answer 'cannot tell'.\n\n"
+    "Chips:\n"
+    "a = shortwave infrared / near infrared / red; b = near infrared / red / green; c = wider view (6 km). Colours are scaled per sample using the same limits for both dates. Open water can look different depending on water and surface conditions; judge from the imagery, not from an expected colour.\n"
+    "One image pixel = 30 m.\n"
+    "Judge from these images only. Do not consult any project map, result, earlier label or other sample set.\n")
+
+
 def stop(msg):
     sys.exit(f"STOP: {msg}")
 
@@ -278,27 +300,7 @@ def main():
         "Chips: a = shortwave infrared / near infrared / red; b = near infrared / red / green;\n"
         "c = wider view (6 km) in shortwave infrared / near infrared / red. 30 m pixels.\n"
         "Do not consult any project map or result while labelling.\n")
-    readme_w = (
-        "Open-water labelling: W sample (W001 to W140)\n"
-        "Landsat 8, 25 August 2014 and 10 September 2014\n\n"
-        "Open index.html in a web browser. It works offline from this folder and keeps its answers separately\n"
-        "from any other labelling page. Use 'Download CSV' (it saves labels_W.csv) and 'Load CSV' to continue.\n\n"
-        "For each sample and each date, answer about the exact centre pixel (the outlined 30 m square):\n"
-        "is there open surface water visible at the exact centre of the marked 30 m pixel in this date's image?\n"
-        "  yes          open surface water is visible at the centre pixel itself\n"
-        "  no           the centre pixel is clearly not open water\n"
-        "  cannot tell  open water cannot be confidently distinguished at the centre pixel; use this rather than guessing\n\n"
-        "Do not answer 'yes' for: dark vegetation; crops or fields that merely appear dark; wet or waterlogged soil\n"
-        "without visible open water; shadows (terrain or cloud); surfaces that are just generally dark; water you\n"
-        "infer only from the surrounding pixels.\n\n"
-        "Surface seen: record what is at the centre pixel. 'Water with vegetation' is a separate description; a\n"
-        "vegetation-covered or ambiguous surface is not open water just because it looks wet. If you cannot tell\n"
-        "whether open water is present, answer 'cannot tell'.\n\n"
-        "Chips: a = shortwave infrared / near infrared / red (open water very dark blue to black);\n"
-        "b = near infrared / red / green (open water very dark, vegetation red); c = wider view (6 km).\n"
-        "Colours are scaled per sample, the same for both dates. One image pixel = 30 m.\n"
-        "Judge from these images only. Do not consult any project map, result, earlier label or other sample set.\n")
-    (LAB / "README.txt").write_text(readme_w if D["readme"] == "w" else readme_v1)
+    (LAB / "README.txt").write_text(README_W if D["readme"] == "w" else readme_v1)
 
     # B3: blinding check on everything in the labelling folder.
     found = []

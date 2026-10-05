@@ -261,3 +261,18 @@ rule C); no finite-population correction is applied, as M1 states none.
   sample (W001 to W140)", with the wording above. Answers are stored under a
   separate browser-storage name from the v1 page, the page accepts only W
   ids when loading a CSV, and it downloads `labels_W.csv`.
+
+**Amendment 5: neutral W chip legend (committed before any W label was collected)**
+
+- The chip legend on the W labelling page and in its README was revised.
+  Reason: the per-sample display scaling of amendment 4 can make muddy
+  floodwater appear bright rather than dark, so the earlier colour hints
+  ("very dark blue to black", "very dark") could bias the human judgement.
+- New legend, on both the page and the README: "a = shortwave infrared /
+  near infrared / red; b = near infrared / red / green; c = wider view
+  (6 km). Colours are scaled per sample using the same limits for both
+  dates. Open water can look different depending on water and surface
+  conditions; judge from the imagery, not from an expected colour."
+- Nothing else changes: the W sample, key, coordinates, chips, chip limits,
+  colour-scaling rule, reflectance values and all other rules stay as
+  committed.
