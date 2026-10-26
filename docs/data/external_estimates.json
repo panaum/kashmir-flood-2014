@@ -1,0 +1,23 @@
+{
+ "note": "External published estimates for comparison only. Not verified independently. The analysis was not adjusted toward any of these figures. This section was added after results were computed; the pre-registration claim covers only the analysis steps, not this comparison.",
+ "estimates": [
+  {
+   "value_km2": 358.6,
+   "approx": false,
+   "date": "2014-09-10",
+   "peak_value_km2": 370.6,
+   "peak_date": "2014-09-08",
+   "method": "Satellite-based (optical); sensor and area definition not fully stated in the source",
+   "citation": "DERS & ISRO, 'A satellite-based rapid assessment on floods in Jammu & Kashmir - September 2014'. J&K Department of Environment and Remote Sensing with the Indian Space Research Organisation.",
+   "short_source": "DERS & ISRO (2014)"
+  },
+  {
+   "value_km2": 557,
+   "approx": true,
+   "date_range": "2014-09-08 to 2014-09-23",
+   "method": "SAR (RISAT-1 / Radarsat-2); cumulative extent over 8-23 September, not a single-date snapshot",
+   "citation": "Bhatt C.M., Rao G.S., Farooq M., Manjusree P., Shukla A., Sharma S.V.S.P., Kulkarni S.S., Srinivasa Rao G., Bhanumurthy V., Diwakar P.G. and Dadhwal V.K. (2017). Satellite-based assessment of the catastrophic Jhelum floods of September 2014, Jammu & Kashmir, India. Geomatics, Natural Hazards and Risk, 8(1), 268-284.",
+   "short_source": "Bhatt et al. (2017)"
+  }
+ ]
+}

@@ -2,6 +2,7 @@
 
 The results section is filled from results.json (written by 18_site_data.py
 from the recorded outputs), so no figure in the README is typed by hand.
+The comparison section reads docs/data/external_estimates.json.
 
 Usage:  .venv/bin/python scripts/19_write_readme.py
 """
@@ -19,10 +20,20 @@ def n(x, d=0):
 
 def main():
     r = json.loads((ROOT / "docs" / "data" / "results.json").read_text())
+    ext = json.loads((ROOT / "docs" / "data" / "external_estimates.json").read_text())
     f, rd, b, m, dt = r["flood"], r["roads"], r["buildings"], r["method"], r["dates"]
     L = []
     w = L.append
     w("# The Kashmir flood, September 2014\n")
+
+    # Headline result (item 1), then image (item 2)
+    w(f"About {n(f['flooded_km2'], 0)} km\u00b2 of the Kashmir valley floor was under water on "
+      f"{dt['flood']} that had been dry on {dt['before']}.\n")
+
+    # Image candidates: previews/flood_valley.png (full-valley overview, chosen),
+    # previews/flood_srinagar.png (city close-up), docs/img/flood_display.png (web-map version).
+    w("![Flood extent, Kashmir valley, 2014-09-10](previews/flood_valley.png)\n")
+
     w(f"A reproducible measurement of the flood in the Kashmir valley from two Landsat 8 images, "
       f"taken on {dt['before']} (before) and {dt['flood']} at {dt['flood_time_utc']} UTC (during). "
       f"Website: {PAGES}\n")
@@ -31,31 +42,70 @@ def main():
       "[METHODS.md](METHODS.md). Input files and checksums: [DATA.md](DATA.md).\n")
 
     w("## Results\n")
+
+    # Threshold provenance (item 3):
+    #   0.127 = Otsu on valid valley-floor MNDWI pixels, flood date 2014-09-10 (05_water.py).
+    #   Range lower bound 361.5 km2 at threshold 0.177 on both dates (c_plus_0.05 variant).
+    #   Range upper bound 423.2 km2 at threshold 0.0 on both dates (b_zero variant).
+    lo_t = r["flood"]["range_thresholds"][0]  # [t_pre, t_post] for the lower km2 bound
+    hi_t = r["flood"]["range_thresholds"][1]  # [t_pre, t_post] for the upper km2 bound
+    lo_t_str = f"{lo_t[0]:.3f}" if lo_t[0] == lo_t[1] else f"{lo_t[0]:.3f}/{lo_t[1]:.3f}"
+    hi_t_str = f"{hi_t[0]:.3f}" if hi_t[0] == hi_t[1] else f"{hi_t[0]:.3f}/{hi_t[1]:.3f}"
     w(f"Analysis area: the valley floor at or below {n(m['valley_floor_max_m'])} m that connects to "
-      f"Srinagar, {n(m['analysis_area_km2'], 1)} km2. Water = MNDWI above {m['threshold']} on both dates; "
-      f"{m['pixel_m']} m pixels.\n")
-    w("| | Value |")
+      f"Srinagar, {n(m['analysis_area_km2'], 1)} km\u00b2. Water\u2009=\u2009MNDWI above {m['threshold']} "
+      f"(Otsu on valid valley-floor pixels, flood date) on both dates; {m['pixel_m']} m pixels. "
+      f"Range {n(f['range_km2'][0], 1)}\u2013{n(f['range_km2'][1], 1)} km\u00b2 spans "
+      f"threshold {lo_t_str} (Otsu\u2009+\u20090.05) to {hi_t_str} (zero on both dates).\n")
+
+    # Table: first column header "Measure" (item 6)
+    # Srinagar box: lon 74.65-74.95, lat 33.95-34.20 from scripts/10_flood.py SRINAGAR_BBOX (rule R9)
+    w("| Measure | Value |")
     w("|---|---|")
-    w(f"| Flooded on {dt['flood']} (water then, dry on {dt['before']}) | **{n(f['flooded_km2'], 1)} km2** |")
-    w(f"| Range across the threshold variants | {n(f['range_km2'][0], 1)} to {n(f['range_km2'][1], 1)} km2 |")
+    w(f"| Flooded on {dt['flood']} (water then, dry on {dt['before']}) | **{n(f['flooded_km2'], 1)} km\u00b2** |")
+    w(f"| Range across the threshold variants | {n(f['range_km2'][0], 1)} to {n(f['range_km2'][1], 1)} km\u00b2 |")
     w(f"| Flooded, outside / inside OpenStreetMap lakes and wetlands | {n(f['outside_lakes_wetlands_km2'], 1)} / "
-      f"{n(f['inside_lakes_wetlands_km2'], 1)} km2 |")
-    w(f"| Water on both dates (river, lakes) | {n(f['persistent_km2'], 1)} km2 |")
-    w(f"| Water in August but not September | {n(f['lost_km2'], 2)} km2 |")
-    w(f"| Not assessed (cloud or shadow on either date) | {n(f['not_assessed_km2'], 2)} km2 "
+      f"{n(f['inside_lakes_wetlands_km2'], 1)} km\u00b2 |")
+    w(f"| Water on both dates (river, lakes) | {n(f['persistent_km2'], 1)} km\u00b2 |")
+    w(f"| Water in August but not September | {n(f['lost_km2'], 2)} km\u00b2 |")
+    w(f"| Not assessed (cloud or shadow on either date) | {n(f['not_assessed_km2'], 2)} km\u00b2 "
       f"({f['not_assessed_pct']} %) |")
-    w(f"| Flooded inside the Srinagar box | {n(f['srinagar_box_km2'], 1)} km2 |")
+    w(f"| Flooded inside the Srinagar box (lon\u202674.65\u201374.95, lat\u202633.95\u201334.20) | "
+      f"{n(f['srinagar_box_km2'], 1)} km\u00b2 |")
     w(f"| Motor roads on flooded ground (OpenStreetMap, {rd['osm_timestamp'][:10]}) | {n(rd['motor_flooded_km'])} "
       f"of {n(rd['motor_total_km'])} km |")
+    # Building counting rule (item 4)
     w(f"| Building footprints standing today on ground that flooded (Microsoft, imagery "
-      f"{b['imagery_start']}-{b['imagery_end']}) | about {b['about_words']}: {n(b['footprints_flooded'])} "
-      f"by centre, {n(b['footprints_flooded_overlap'])} by any overlap, of {n(b['footprints_total'])} |")
+      f"{b['imagery_start']}\u2013{b['imagery_end']}) | "
+      f"{n(b['footprints_flooded'])} to {n(b['footprints_flooded_overlap'])} depending on the counting rule "
+      f"(by centre / by any overlap), of {n(b['footprints_total'])} |")
     w("")
     w("The building figure counts footprints in today's data on flooded ground. It is not a count of "
       "buildings flooded in 2014.\n")
 
+    # Comparison with published estimates (item 10)
+    w("## Comparison with published estimates\n")
+    ders = next(e for e in ext["estimates"] if "DERS" in e["short_source"])
+    bhatt = next(e for e in ext["estimates"] if "Bhatt" in e["short_source"])
+    our_km2 = f["flooded_km2"]
+    ders_km2 = ders["value_km2"]
+    pct_diff = round(100 * (our_km2 - ders_km2) / ders_km2, 1)
+    sign = "+" if pct_diff >= 0 else ""
+    w(f"This analysis gives {n(our_km2, 1)} km\u00b2 on {dt['flood']}. "
+      f"Two published figures are recorded in `docs/data/external_estimates.json`:\n")
+    w(f"- **{ders['short_source']}**: {ders['value_km2']} km\u00b2 on {ders['date']} "
+      f"(peak in their series {ders['peak_value_km2']} km\u00b2 on {ders['peak_date']}). "
+      f"This analysis is {sign}{pct_diff}\u2009% relative to that same-day figure. "
+      f"Citation: {ders['citation']}")
+    w(f"- **{bhatt['short_source']}**: about {bhatt['value_km2']} km\u00b2 ({bhatt['method']}). "
+      f"Citation: {bhatt['citation']}\n")
+    w("Caveats for any comparison: (a) this compares totals only, not pixel by pixel; "
+      "(b) the analysis areas differ \u2014 area definitions are not stated in detail in all sources; "
+      "(c) this comparison section was added after the results were computed and does not affect "
+      "the pre-registered analysis steps.\n")
+
     w("## Reproduce\n")
-    w("Python 3.13 on macOS was used. All downloads are checked (size, MD5 where the server gives one, "
+    # item 8: Tested with
+    w("Tested with Python 3.13 on macOS. All downloads are checked (size, MD5 where the server gives one, "
       "sha256 recorded) and the scripts stop rather than guess when something is missing.\n")
     w("```")
     w("python3 -m venv .venv && .venv/bin/pip install -r requirements.txt")
@@ -72,25 +122,33 @@ def main():
                     ("19_write_readme.py", "this README")):
         w(f".venv/bin/python scripts/{s:<28} # {what}")
     w("```")
+    w("")
+    # item 7: run_all.sh mention + 07 explanation
+    w("Or run everything in order with `bash scripts/run_all.sh` (stops on first error). "
+      "Script 07 (`write_methods_md`) is placed near the end because it reads all analysis "
+      "outputs and cannot run until steps 08\u201317 are complete.\n")
     w("Raw and intermediate data go to `data/` (not committed, about 2.5 GB). OpenStreetMap and the "
       "Microsoft footprints change over time; a later run will use newer snapshots, recorded in METHODS.md. "
       "To view the website locally: `python3 -m http.server -d docs`.\n")
 
     w("## Limitations\n")
-    w(f"- One moment: one image at {dt['flood_time_utc']} UTC on {dt['flood']}, not the largest extent of the flood.")
+    # item 11: published series peak timing
+    w(f"- One moment: one image at {dt['flood_time_utc']} UTC on {dt['flood']}, not the largest extent of the flood. "
+      "The published daily series (DERS & ISRO) puts the peak around 2014-09-08, about two days before this image.")
     w("- The old city is probably undercounted: where roofs fill most of a 30 m pixel, water between them may "
       "not register. Not tested.")
     w("- Lakes covered by plants in August (parts of Wular and Dal) count as flooded where they were open water "
       "in September.")
     w("- Today's maps, not 2014's: roads from OpenStreetMap, buildings from imagery of "
-      f"{b['imagery_start']}-{b['imagery_end']}.")
+      f"{b['imagery_start']}\u2013{b['imagery_end']}.")
     w(f"- Clouds the satellite's own mask missed hide what is under them (rough estimate "
-      f"{n(f['unflagged_cloud_u2_km2'], 1)} km2).")
+      f"{n(f['unflagged_cloud_u2_km2'], 1)} km\u00b2).")
     w("- Only the valley floor connected to Srinagar was measured; the elevation model includes buildings and trees.")
     w("- See METHODS.md for every limitation and check.\n")
 
     w("## How this was made\n")
-    w("The analysis was directed by Anaum Pandit. "
+    # item 9: authorship
+    w("This analysis was conducted by Anaum Pandit. "
       "Every rule for the flood and exposure steps was committed before the corresponding result was "
       "computed; the git history shows the order.\n")
 
@@ -102,11 +160,11 @@ def main():
       "DEM GLO-30 (Copernicus licence, notice below); OpenStreetMap (ODbL 1.0); Microsoft Building "
       "Footprints (ODbL 1.0). Leaflet (BSD 2-Clause) and Bodoni Moda (SIL OFL 1.1) are included with "
       "their licences in `docs/vendor/` and `docs/fonts/`.")
-    w("- Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH "
+    w("- Produced using Copernicus WorldDEM-30 \u00a9 DLR e.V. 2010-2014 and \u00a9 Airbus Defence and Space GmbH "
       "2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. The "
       "organisations in charge of the Copernicus programme by law or by delegation do not incur any "
       "liability for any use of the Copernicus WorldDEM-30.")
-    w("- Map data © OpenStreetMap contributors. Building footprints © Microsoft. No data provider has "
+    w("- Map data \u00a9 OpenStreetMap contributors. Building footprints \u00a9 Microsoft. No data provider has "
       "reviewed or endorses this work.\n")
 
     w("## How to cite\n")
